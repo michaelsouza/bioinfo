@@ -25,6 +25,8 @@ def load_problem(fname):
         if lij > uij:
             raise Exception('Inconsistent data (lij > uij): lij = %g and uij %g' % (lij, uij))
     G['nnodes'] = nid_max + 1
+    G['I'] = np.array([G['I'][k] - 1 for k in range(G['nedges'])], dtype=int)
+    G['J'] = np.array([G['J'][k] - 1 for k in range(G['nedges'])], dtype=int)
     G['L'] = np.array([G['L'][k] for k in range(G['nedges'])], dtype=float)
     G['U'] = np.array([G['U'][k] for k in range(G['nedges'])], dtype=float)
     fid_xsol = '%s%s' % (fname, '_xsol.csv')
@@ -65,7 +67,7 @@ def xinit_random(G):
     x = max_dij * nnodes * np.random.random_sample((nnodes, 3))
     return x
 
-
+    
 def norm(x):
     s = 0
     for xi in x:
@@ -75,6 +77,7 @@ def norm(x):
 
 def fobj(G,x,dij_tol=0.0):
     f = 0.0
+    print('x=',x)
     for k in range(G['nedges']):
         lij = (1-dij_tol) * G['L'][k]
         uij = (1+dij_tol) * G['U'][k]
@@ -126,8 +129,6 @@ def fobj_smooth(alpha, tau, G, y, grad=False):
         theta_ij, g_theta  = theta(tau, xi - xj, grad=True)
         phi_lij, g_phi_lij = phi(alpha, tau, lij - theta_ij, diff=True)
         phi_uij, g_phi_uij = phi(alpha, tau, theta_ij - uij, diff=True)
-        # print('phi_lij[%d] = % g' % (k, phi_lij))
-        # print('phi_uij[%d] = % g' % (k, phi_uij))
         f +=  phi_lij + phi_uij
         g[i] += (g_phi_uij - g_phi_lij) * g_theta
         g[j] -= g[i]
@@ -135,20 +136,101 @@ def fobj_smooth(alpha, tau, G, y, grad=False):
         return f, g.reshape((3 * len(x),))
     else:
         return f
+        
+        
+def fobj_smooth_rot(alpha, tau, G, y, w, grad=False):
+    if len(y.shape) == 1:
+        # convert array to matrix
+        x = y.reshape((int(len(y) / 3), 3))
+    else:
+        x = y
 
-
+    # applying rotations
+    for j in range(len(w['index'])):
+        k = w['index'][j]
+        a = w['angle'][j]
+        for i in range(k,G['nnodes']):
+            x[i] = rotation(x[k-1],x[k-1]-x[k-2],a,x[i],diff=False)
+            
+    # diff rotation
+    g_x = np.zeros((len(x),len(w['index']),3),dtype=float)
+    for j in range(len(w['index'])):
+        k = w.index
+        a = 0
+        for i in range(k,G['nodes']):
+            x[i],g_x[i][j] = rotation(x[k-1],x[k-1]-x[k-2],0,x[i],diff=True)
+        
+    # eval smooth function
+    f = 0.0
+    g = np.zeros((len(w['index']),), dtype=float)
+    for k in range(G['nedges']):
+        lij = G['L'][k]
+        uij = G['U'][k]
+        i = G['I'][k]
+        j = G['J'][k]
+        xi = x[i]
+        xj = x[j]
+        theta_ij, g_theta  = theta(tau, xi - xj, grad=True)
+        phi_lij, g_phi_lij = phi(alpha, tau, lij - theta_ij, diff=True)
+        phi_uij, g_phi_uij = phi(alpha, tau, theta_ij - uij, diff=True)
+        f +=  phi_lij + phi_uij
+        gi = (g_phi_uij - g_phi_lij) * g_theta
+        gj = -gi
+        g += np.dot(g_x[i], gi) + np.dot(g_x[j], gj)
+    
+    if grad:
+        return f, g.reshape((3 * len(x),))
+    else:
+        return f
+        
+        
 def numdiff(f, x):
+    fx = f(x)
     if np.isscalar(x):
         x = np.array([x],dtype=float)
-    g = np.zeros(x.shape)
-    fx = f(x)
-    for k in range(len(x)):
-        dxk  = 0.001 * max([np.abs(x[k]), 1.0])
-        x[k] = x[k] + dxk
-        g[k] = (f(x) - fx) / dxk
-        x[k] = x[k] - dxk
+    if np.isscalar(fx):
+        fx = np.array([fx],dtype=float)
+    g = np.zeros((len(fx),len(x)))
+    d = np.zeros(len(x))
+    h = 0.001
+    print('d=',d)
+    for i in range(len(fx)):
+        for j in range(len(x)):
+            d[j] = h * max([np.abs(x[j]), 1.0])
+            fx = f(x + d) - f(x - d)
+            if np.isscalar(fx):
+                g[i,j] = fx / (2 * d[j])
+            else:
+                g[i,j] = fx[i] / (2*d[j])
+            d[j] = 0
     return g
       
+    
+def rotation(vec_p,vec_d,theta,vec_x,diff=False):
+    (a,b,c) = vec_p # base point
+    (u,v,w) = vec_d/norm(vec_d) # line direction
+    (x,y,z) = vec_x # point to be rotated
+    cos_theta = np.cos(theta)
+    sin_theta = np.sin(theta)
+    vec_d_dot_vec_x = u*x+v*y+w*z
+    omt = 1 - cos_theta
+    C1 = (a*(v**2+w**2) - u*(b*v+c*w-vec_d_dot_vec_x))
+    C2 = (b*(u**2+w**2) - v*(a*u+c*w-vec_d_dot_vec_x))
+    C3 = (c*(u**2+v**2) - w*(a*u+b*v-vec_d_dot_vec_x))
+    S1 = (-c*v + b*w - w*y + v*z)
+    S2 = ( c*u - a*w + w*x - u*z)
+    S3 = (-b*u + a*v - v*x + u*y)
+    vec_y = np.array([C1*omt + x*cos_theta + S1*sin_theta,
+                      C2*omt + y*cos_theta + S2*sin_theta,
+                      C3*omt + z*cos_theta + S3*sin_theta],
+                      dtype=float)
+    if diff:
+        vec_g = np.array([(C1-x)*sin_theta+S1*cos_theta,
+                          (C2-y)*sin_theta+S2*cos_theta,
+                          (C3-z)*sin_theta+S3*cos_theta],dtype=float)
+        return vec_y, vec_g
+    else:
+        return vec_y
 
 def check_theta():
     print('Checking function theta')
@@ -208,6 +290,18 @@ def check_fobj_smooth(G,xsol):
     x = xsol.reshape((3 * len(xsol),))
     print('g    =', g)
     print('g_num=', numdiff(f,x))
+    
+def check_fobj_smooth_rot(G,xsol):
+    fun = fobj(G,xsol)
+    tau   = 0.001
+    alpha = 0.5
+    f,g = fobj_smooth(alpha, tau, G, xsol, grad=True)
+    print('fun=',fun)
+    print('f  =',f)
+    f = lambda y: fobj_smooth(alpha, tau, G, y, grad=False)
+    x = xsol.reshape((3 * len(xsol),))
+    print('g    =', g)
+    print('g_num=', numdiff(f,x))
 
 
 def check_xinit(G):
@@ -217,8 +311,22 @@ def check_xinit(G):
     print('Generating solution using xinit_jjmore')
     x = xinit_jjmore(G)
     check_xsol(G, x)
+    
+    
+def check_rotation():
+    x = np.array([1,2,3], dtype=float)
+    p = np.array([1,4,0], dtype=float)
+    d = np.array([0,0,1], dtype=float)
+    theta = np.pi / 4.0
+    y,g = rotation(p,d,theta,x,diff=True)
+    print('        answer:', y)
+    print('correct answer: [ 2.41421356  2.58578644  3.        ]')
+    f = lambda t: rotation(p,d,t,x,diff=False)
+    g_num = numdiff(f,theta)
+    print('g=',g)
+    print('g_num=',g_num)
 
-
+    
 def sph(G):
     nedges = G['nedges']
     D = (G['L'] + G['U']) / 2.0
@@ -269,13 +377,28 @@ def sph(G):
     # check_xsol(G,x,detailed=True)
     return x
 
+        
+def sph_rot(G):
+    # set the initial solution satisfying the dmdgp 
+    # exact distance constraints
+    x = xinit_dmdgp(G)
+    w = np.zeros(len(x), dtype=float)
+    nnodes = G['nnodes']
+    
+    # calculating derivatives
+    z = x.copy()
+    for k in range(4, nnodes):
+        z[k],gk = rotation()
+    
 if __name__ == "__main__":
-    fname = '../matlab/mdpg_1GPV_N100_EPS0.16'
+    fname = '../../instances/mdpg_1GPV_N008_EPS0.00'
     G, xsol = load_problem(fname)
-    # print('G=\n', G)
+    print('G=\n', G)
     # print('xsol=', xsol)
     # check_theta()
     # check_phi()
     # check_fobj_smooth(G,xsol)
     # check_xinit(G)
-    sph(G)
+    # sph(G)
+    # check_rotation()
+    check_fobj_smooth_rot(G,xsol)

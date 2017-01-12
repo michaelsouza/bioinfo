@@ -1,10 +1,23 @@
 function [x,G,xsol] = mdgp()
-    fname = '../../instances/dmdgp_N16_D5_P0.1_S2';
+    fname = '../../instances/dmdgp_N64_D5_P0.1_S2';
     [G, xsol] = mdgp_load_problem(fname);
-    x = sph(G);
+    x_ini     = mdgp_xinit_rotors(G);
+    
+    options = sph_options();
+    
+    options.optim.GradObj = 'on';
+    fprintf('Options\n');
+    fprintf('   GradObj = %s\n', options.optim.GradObj);
+    fprintf('   Plot    = %s\n\n', options.plot);
+    x = sph(G,x_ini,options);
     d = rmsd(x,xsol,[],'SPH:', {'x', 'xsol'});
     fprintf('   rmsd       = %g\n\n', d);
-    x = sph_rotors(G);
+    
+    options.optim.GradObj = 'off';
+    fprintf('Options\n');
+    fprintf('   GradObj = %s\n', options.optim.GradObj);
+    fprintf('   Plot    = %s\n', options.plot);
+    x = sph_rotors(G,x_ini,options);
     d = rmsd(x,xsol,[],'SPH-ROTORS:', {'x', 'xsol'});
     fprintf('   rmsd       = %g\n\n', d); 
 
@@ -17,6 +30,14 @@ function [x,G,xsol] = mdgp()
 %    check_rotors_apply()
 %    check_rotors_diff()
 %    check_fobj_smooth_rot(G,xsol)
+end
+
+function options = sph_options(varargin)
+    options.plot = 'on'; 
+    options.optim  = optimoptions('fminunc',...
+        'GradObj','on',...
+        'Display','off',...
+        'Algorithm','quasi-newton');
 end
 
 function view_coords(x)
@@ -276,17 +297,13 @@ function [f,g] = fobj_smooth_rot(alpha, tau, G, x, wi, wx)
 end
 
 
-function x = sph(G, options)
-    if nargin < 2
-        options.opt  = optimoptions('fminunc','GradObj','on','Display','off','Algorithm','quasi-newton');
-        options.plot = 'off'; 
-    end
-    options.plot = strcmp(options.plot, 'off');
-    
+function x = sph(G,x,options)
+    options.plot = ~strcmp(options.plot, 'off');
+    tstart = tic;
 	nedges = G.nedges;
 	D = (G.l + G.u) / 2.0;
 	d = sort(D);
-	tau   = d(ceil(0.1 * nedges));
+	tau   = d(ceil(0.75 * nedges));
 	alpha = 0.5;
 	rho   = 0.99;
 	maxit = 1000;
@@ -297,8 +314,7 @@ function x = sph(G, options)
 	fprintf('   rho   = %g\n', rho);
 	fprintf('   maxit = %g\n', maxit);
 	fprintf('   dtol  = %g\n', dtol);
-% 	x  = mdgp_xinit_jjmore(G);
-    x = mdgp_xinit_rotors(G);
+   
 	fx = fobj(G,x,dtol);
 	fprintf('   fx    = %g\n\n', fx);
 	% check_xsol(G,x, detailed=True)
@@ -319,7 +335,7 @@ function x = sph(G, options)
 		f = @(y) fobj_smooth(alpha, tau, G, y);
 		x = matrix2array(x); % matrix to vector
 		tic
-		[x,~,~,output] = fminunc(f, x, options.opt);
+		[x,~,~,output] = fminunc(f, x, options.optim);
 		telapsed = toc;
 		x = array2matrix(x);
 		fx = fobj(G,x,dtol);
@@ -345,7 +361,7 @@ function x = sph(G, options)
 		if mdgp_calculate_erros(G,x,dtol) < 1E-16
 			break
 		end
-		tau = tau * rho^(1 + 10 / output.iterations);
+		tau = tau * rho;
 	end
 	fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %3.2f\n', ...
 		nit_global, fx, df, dx, output.iterations, tau, toc);
@@ -353,15 +369,12 @@ function x = sph(G, options)
 	fprintf('   nit global = %g\n', nit_global);
 	fprintf('   nit local  = %g\n', nit_local);
 	fprintf('   max_error  = %g\n', mdgp_calculate_erros(G,x));
+    fprintf('   tElapsed   = %3.2fs\n', toc(tstart));
 end
 
-function x = sph_rotors(G, options)
-    if nargin < 2
-        options.opt  = optimoptions('fminunc','GradObj','off','Display','off','Algorithm','quasi-newton');
-        options.plot = 'off'; 
-    end
-    options.plot = strcmp(options.plot, 'off');
-    
+function x = sph_rotors(G,x,options)
+    options.plot = ~strcmp(options.plot, 'off');
+    tstart = tic;
 	nedges = G.nedges;
 	D = (G.l + G.u) / 2.0;
 	d = sort(D);
@@ -378,10 +391,9 @@ function x = sph_rotors(G, options)
 	fprintf('   dtol  = %g\n', dtol);
 	
     % initial values
-    x_ref  = mdgp_xinit_rotors(G);
+    x_ref  = x;
     wx = zeros(G.nnodes,1);
     wi = 1:G.nnodes;
-    x  = x_ref;
 	fx = fobj(G,x_ref,dtol);
     fprintf('   fx    = %g\n\n', fx);
 	
@@ -402,7 +414,7 @@ function x = sph_rotors(G, options)
         % defining and solving unconstrained problem
 		f = @(wx) fobj_smooth_rot(alpha, tau, G, x_ref, wi, wx);
 		tic
-		[wx,~,~,output] = fminunc(f, wx, options.opt);
+		[wx,~,~,output] = fminunc(f, wx, options.optim);
 		telapsed = toc;
         
         % updates
@@ -438,6 +450,7 @@ function x = sph_rotors(G, options)
 	fprintf('   nit global = %g\n', nit_global);
 	fprintf('   nit local  = %g\n', nit_local);
 	fprintf('   max_error  = %g\n', mdgp_calculate_erros(G,x));
+    fprintf('   tElapsed   = %3.2fs\n', toc(tstart));
 end
 
 % function check_theta()

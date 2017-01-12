@@ -43,7 +43,7 @@ value = norm(x - y, 'fro') / sqrt(n);
 
 % plot superimposed structures
 if(nargin > 3 && ~isempty(stitle))
-    stitle = sprintf('%s, value: %e, npoints: %d', stitle, value, n);
+    stitle = sprintf('%s: RMSD=%3.2E, #Points: %d', stitle, value, n);
     view_coords(x,y,stitle,leg);
 end
 end

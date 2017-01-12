@@ -1,21 +1,22 @@
 function [x,G,xsol] = mdgp()
-fname = '../../instances/dmdgp_N008_D005_P010_S002';
-[G, xsol] = mdgp_load_problem(fname);
-x = sph(G);
-% x = sph_rotors(G);
-d = rmsd(x,xsol,[],'SPH - RMSD', {'x', 'xsol'});
-fprintf('   rmsd       = %g\n', d); 
+    fname = '../../instances/dmdgp_N16_D5_P0.1_S2';
+    [G, xsol] = mdgp_load_problem(fname);
+    x = sph(G);
+    d = rmsd(x,xsol,[],'SPH:', {'x', 'xsol'});
+    fprintf('   rmsd       = %g\n\n', d);
+    x = sph_rotors(G);
+    d = rmsd(x,xsol,[],'SPH-ROTORS:', {'x', 'xsol'});
+    fprintf('   rmsd       = %g\n\n', d); 
 
 %% Check functions
-% check_theta()
-% check_phi()
-% check_fobj_smooth(G,xsol)
-% check_xinit(G)
-% check_rotate()
-% check_rotors_apply()
-% check_rotors_diff()
+%    check_theta()
+%    check_phi()
+%    check_fobj_smooth(G,xsol)
+%    check_xinit(G)
+%    check_rotate()
+%    check_rotors_apply()
+%    check_rotors_diff()
 %    check_fobj_smooth_rot(G,xsol)
-%    sph(G)
 end
 
 function view_coords(x)
@@ -289,16 +290,15 @@ function x = sph(G, options)
 	alpha = 0.5;
 	rho   = 0.99;
 	maxit = 1000;
-	ftol  = 1E-8;
 	dtol  = 1E-2;
 	fprintf('SPH\n')
 	fprintf('   alpha = %g\n', alpha);
 	fprintf('   tau   = %g\n', tau);
 	fprintf('   rho   = %g\n', rho);
 	fprintf('   maxit = %g\n', maxit);
-	fprintf('   ftol  = %g\n', ftol);
 	fprintf('   dtol  = %g\n', dtol);
-	x  = mdgp_xinit_jjmore(G);
+% 	x  = mdgp_xinit_jjmore(G);
+    x = mdgp_xinit_rotors(G);
 	fx = fobj(G,x,dtol);
 	fprintf('   fx    = %g\n\n', fx);
 	% check_xsol(G,x, detailed=True)
@@ -342,7 +342,7 @@ function x = sph(G, options)
                 nit_global, fx, df, dx, output.iterations, tau, telapsed); 
         end
 		% stop criteria
-		if fx < ftol
+		if mdgp_calculate_erros(G,x,dtol) < 1E-16
 			break
 		end
 		tau = tau * rho^(1 + 10 / output.iterations);
@@ -369,14 +369,12 @@ function x = sph_rotors(G, options)
 	alpha = 0.5;
 	rho   = 0.99;
 	maxit = 1000;
-	ftol  = 1E-8;
 	dtol  = 1E-2;
 	fprintf('SPH_ROTORS\n')
 	fprintf('   alpha = %g\n', alpha);
 	fprintf('   tau   = %g\n', tau);
 	fprintf('   rho   = %g\n', rho);
 	fprintf('   maxit = %g\n', maxit);
-	fprintf('   ftol  = %g\n', ftol);
 	fprintf('   dtol  = %g\n', dtol);
 	
     % initial values
@@ -414,7 +412,6 @@ function x = sph_rotors(G, options)
 		df = (fx - fx_old) / fx_old;
 		dx = norm(x - x_old) / max(norm(x_old),1);
         dw = norm(wx - w_old) / max(norm(w_old),1);
-        
         if options.plot
             view_coords(x);
             drawnow
@@ -428,7 +425,7 @@ function x = sph_rotors(G, options)
                 nit_global, fx, df, dx, dw, output.iterations, tau, telapsed); 
         end
 		% stop criteria
-        if fx < ftol
+        if mdgp_calculate_erros(G,x,dtol) < 1E-16
             break
         end
         

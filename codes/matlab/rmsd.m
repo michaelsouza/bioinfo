@@ -1,4 +1,4 @@
-function [value, Q, x, y] = rmsd(x, y, idx, stitle)
+function [value, Q, x, y] = rmsd(x, y, idx, stitle, leg)
 % idx: only x(idx,:) and y(idx,:) coordinates are used in the computation
 % x  : real matrix with three columns
 % y  : real matrix with three columns
@@ -20,7 +20,7 @@ if(nargin > 2 && ~isempty(idx))
 end
 
 % get centers
-n  = length(ix);
+n  = length(x);
 xc = sum(x) / length(x); % center of x
 yc = sum(y) / length(y); % center of y
 
@@ -44,18 +44,24 @@ value = norm(x - y, 'fro') / sqrt(n);
 % plot superimposed structures
 if(nargin > 3 && ~isempty(stitle))
     stitle = sprintf('%s, value: %e, npoints: %d', stitle, value, n);
-    view_coords(x,y,stitle);
+    view_coords(x,y,stitle, leg);
 end
 end
 
-function view_coords(x,y,stitle)
+function view_coords(x,y,stitle,leg)
 n = length(x);
 
 figure;
 hold on;
+box on;
+grid on;
+% Create axes
 for i =	1:n
-    plot3( x(i,1), x(i,2), x(i,3), '*b');
-    plot3( y(i,1), y(i,2), y(i,3), 'or');
+    plot3(x(i,1), x(i,2), x(i,3), '*b');
+    plot3(y(i,1), y(i,2), y(i,3), 'or');
+    if i == 1
+        legend(leg{1},leg{2});
+    end
 end
 hold off;
 

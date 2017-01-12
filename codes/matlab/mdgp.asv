@@ -1,8 +1,8 @@
 function [x,G,xsol] = mdgp()
 fname = '../../instances/dmdgp_N008_D005_P010_S002';
 [G, xsol] = mdgp_load_problem(fname);
-x = sph(G);
-% x = sph_rotors(G);
+% x = sph(G);
+x = sph_rotors(G);
 d = rmsd(x,xsol,[],'SPH - RMSD', {'x', 'xsol'});
 fprintf('   rmsd       = %g\n', d); 
 
@@ -326,7 +326,7 @@ function x = sph(G, options)
 		nit_local = nit_local + output.iterations;
 		
 		df = (fx - fx_old) / fx_old;
-		dx = norm(x - x_old) / max(norm(x), 1);
+		dx = norm(x - x_old) / norm(x);
        
         % check if the points are aligned
         if options.plot
@@ -381,8 +381,7 @@ function x = sph_rotors(G, options)
 	
     % initial values
     x_ref  = mdgp_xinit_rotors(G);
-    wx = zeros(G.nnodes,1);
-    wi = 1:G.nnodes;
+    w  = zeros(G.nnodes,1);
     x  = x_ref;
 	fx = fobj(G,x_ref,dtol);
     fprintf('   fx    = %g\n\n', fx);
@@ -399,21 +398,21 @@ function x = sph_rotors(G, options)
 	for nit_global = 1:maxit
         fx_old = fx;
 		x_old = x;
-        w_old = wx;
+        w_old = w;
 		
         % defining and solving unconstrained problem
-		f = @(wx) fobj_smooth_rot(alpha, tau, G, x_ref, wi, wx);
+		f = @(w) fobj_smooth_rot(alpha, tau, G, x_ref, [], w);
 		tic
-		[wx,~,~,output] = fminunc(f, wx, options.opt);
+		[w,~,~,output] = fminunc(f, w, options.opt);
 		telapsed = toc;
         
         % updates
-        x  = rotors_apply(x_ref,wi,wx);
+        x  = rotors_apply();
 		fx = fobj(G,x,dtol);
 		nit_local = nit_local + output.iterations;
 		df = (fx - fx_old) / fx_old;
-		dx = norm(x - x_old) / max(norm(x_old),1);
-        dw = norm(wx - w_old) / max(norm(w_old),1);
+		dx = norm(x - x_old) / norm(x_old);
+        dw = norm(w - w_old) / norm(w_old);
         
         if options.plot
             view_coords(x);

@@ -44,16 +44,17 @@ value = norm(x - y, 'fro') / sqrt(n);
 % plot superimposed structures
 if(nargin > 3 && ~isempty(stitle))
     stitle = sprintf('%s, value: %e, npoints: %d', stitle, value, n);
-    view_coords(x,y,stitle, leg);
+    view_coords(x,y,stitle,leg);
 end
 end
 
 function view_coords(x,y,stitle,leg)
 n = length(x);
-
-figure;
+FIG  = figure;
+AXES = axes('Parent',FIG);
+view(AXES,[32 16]);
 hold on;
-box on;
+box  on;
 grid on;
 % Create axes
 for i =	1:n
@@ -65,7 +66,7 @@ for i =	1:n
 end
 hold off;
 
-if(nargin == 3)
+if(nargin > 2)
     title(stitle);
 else
     title('view coords');

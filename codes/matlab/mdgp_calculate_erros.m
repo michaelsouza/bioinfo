@@ -18,7 +18,7 @@ function max_eij = mdgp_calculate_erros(G, x, verbose)
 			max_eij = eij;
 		end
 		if verbose
-			fprintf('(%d,%d) [%3.2f,%3.2f] = %3.2f (%g)\n', i, j, lij, uij, dij, eij);
+			fprintf('(%d,%d) [%3.2f,%3.2f] = %6.2f (%6.3f)\n', i, j, lij, uij, dij, eij);
 		end
 	end
 	if verbose

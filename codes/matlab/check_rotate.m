@@ -2,26 +2,29 @@ function check_rotate()
 	fprintf('Checking rotate function\n');
 	[~,x] = mdgp_load_problem('../../instances/mdpg_1GPV_N008_EPS0.16');
 	x = array2matrix(x);
-	p = x(4,:);
-	y = x(3,:);
-	z = x(2,:);
+	p = x(:,4);
+	y = x(:,3);
+	z = x(:,2);
 	theta = pi / 3;
-	[v, g] = rotate(theta, p, y, z);
+	v = rotate(theta, p, y, z);
 	disp_vec('v', v);
-    gt = g(:,1);
-    gp = g(:,2:4);
-    gy = g(:,5:7);
-    gz = g(:,8:10);
-	ft = @(theta) rotate(theta,p,y,z);
-	disp_vec('gt    ',gt);
-	disp_vec('gt_num',numdiff(ft,theta));
-	fp = @(p) rotate(theta,p,y,z);
-	disp_mat('gp',gp);
-	disp_mat('gp_num',numdiff(fp,p));
-	fy = @(y) rotate(theta,p,y,z);
-	disp_mat('gy',gy);
-	disp_mat('gy_num',numdiff(fy,y));
-	fz = @(z) rotate(theta,p,y,z);
-	disp_mat('gz',gz);
-	disp_mat('gz_num',numdiff(fz,z));
+    for i = 1:100
+        x = rand(10,1);
+        [~,g] = rotate(x(1), x(2:4), x(5:7), x(8:10));
+        g_num = jacobianest(@(x)rotate_handle(x), x);
+        if norm(g - g_num) > 1E-4
+            fprintf('|g-g_num| = %g\n', norm(g-g_num));
+            fprintf('   Failed');
+            keyboard;
+        end
+    end
+    fprintf('   Everything is fine\n');
+end
+
+function x = rotate_handle(x)
+theta = x(1);
+p = x(2:4);
+y = x(5:7);
+z = x(8:10);
+x = rotate(theta,p,y,z);
 end

@@ -21,7 +21,7 @@ function [G,xsol] = mdgp_load_problem(fname)
 	fid_xsol = sprintf('%s%s',fname, '_xsol.csv');
 	fprintf('Reading solution: %s\n', fid_xsol)
 	xsol = readtable(fid_xsol);
-	xsol = [xsol.x,xsol.y,xsol.z];
+	xsol = [xsol.x';xsol.y';xsol.z'];
 	G = struct('fname',fname,'nnodes',nnodes,'nedges',nedges,'i',G.I,'j',G.J,'l',G.L,'u',G.U);
 	disp_problem(G)
 end

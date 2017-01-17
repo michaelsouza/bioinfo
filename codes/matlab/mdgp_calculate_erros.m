@@ -1,6 +1,6 @@
 function max_eij = mdgp_calculate_erros(G, x, dij_tol, verbose)
-	if nargin < 4
-		verbose = false;
+    if nargin < 4
+        verbose = false;
     end
     if nargin < 3
         dij_tol = 0;
@@ -11,8 +11,8 @@ function max_eij = mdgp_calculate_erros(G, x, dij_tol, verbose)
 		j = G.j(k);
 		lij = (1-dij_tol) * G.l(k);
 		uij = (1+dij_tol) * G.u(k);
-		xi = x(i,:);
-		xj = x(j,:);
+		xi = x(:,i);
+		xj = x(:,j);
 		dij = norm(xi - xj);
 		f_lij = max(lij - dij, 0);
 		f_uij = max(dij - uij, 0);

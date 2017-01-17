@@ -1,0 +1,7 @@
+x = sym('x',[3,1],'real');
+y = sym('y',[3,1],'real');
+tau = sym('tau','real');
+alpha = sym('alpha','real');
+lij = sym('lij','real');
+uij = sym('u
+phi = alpha * x + sqrt((alpha * x).^2 + tau.^2);

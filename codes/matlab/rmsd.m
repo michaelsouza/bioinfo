@@ -4,6 +4,8 @@ function [value, Q, x, y] = rmsd(x, y, idx, stitle, leg)
 % y  : real matrix with three columns
 
 % check input parameters
+x = x';
+y = y';
 [~,ncols] = size(x);
 if(ncols < 3)
     error('RMSD::The input x must be a matrix with 3 columns\n');
@@ -50,16 +52,17 @@ end
 
 function view_coords(x,y,stitle,leg)
 n = length(x);
-FIG  = figure;
-AXES = axes('Parent',FIG);
-view(AXES,[32 16]);
+subplot(1,2,1);
+view([32 16]);
 hold on;
 box  on;
 grid on;
 % Create axes
+d = zeros(n,1);
 for i =	1:n
     plot3(x(i,1), x(i,2), x(i,3), '*b');
     plot3(y(i,1), y(i,2), y(i,3), 'or');
+    d(i) = norm(x(i,:) - y(i,:));
     if i == 1
         legend(leg{1},leg{2});
     end
@@ -71,4 +74,8 @@ if(nargin > 2)
 else
     title('view coords');
 end
+subplot(1,2,2)
+plot(sort(d),'-x');
+xlabel('Pair ID')
+ylabel('d(x_i,y_i))')
 end

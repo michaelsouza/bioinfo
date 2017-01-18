@@ -1,7 +1,6 @@
 function check_rotate()
-	fprintf('Checking rotate function\n');
 	[~,x] = mdgp_load_problem('../../instances/mdpg_1GPV_N008_EPS0.16');
-	x = array2matrix(x);
+    fprintf('Checking rotate function\n');
 	p = x(:,4);
 	y = x(:,3);
 	z = x(:,2);

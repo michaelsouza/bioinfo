@@ -12,7 +12,7 @@ function [x,g] = rotors_apply(x,S,W)
     end
     nnodes = length(x);
     % jacobian matrix
-    J = zeros(3,nnodes,10,length(S));
+    C = RotorsApplyContext(nnodes, S);
 	
     % applying rotations
     for k = 1:length(S)
@@ -23,7 +23,7 @@ function [x,g] = rotors_apply(x,S,W)
         end
         % update x
         for q = j:nnodes
-            [x(:,q),J(:,q,:,k)] = rotate(w,x(:,q),x(:,j-1),x(:,j-2));
+            [x(:,q),C.J{q,k}] = rotate(w,x(:,q),x(:,j-1),x(:,j-2));
         end
     end
     
@@ -34,8 +34,8 @@ function [x,g] = rotors_apply(x,S,W)
             i = S(k);
             for q = i:length(x)
                 % largest rotation index that affects Xq
-                j = max(S(S<=q));
-                g(:,q,k) = diff_x(q,j,i,S,J);
+                j = C.get_j(q);
+                g(:,q,k) = diff_x(q,j,i,C);
             end
         end
         
@@ -45,37 +45,35 @@ function [x,g] = rotors_apply(x,S,W)
     end
 end
 
- % d Xjq / d Wi
- function g = diff_x(q,j,i,S,J)
- j = min(j, max(S(S<=q)));
- [~,k] = ismember(j,S);
- if q < i || j < i || j > q
-     g = [0,0,0];
- elseif i == j
-     Jqk = reshape(J(:,q,:,k), [3, 10]);
-     u = [1;0;0;0;0;0;0;0;0;0];
-     g = (Jqk * u)';
- else
-     Jqk = reshape(J(:,q,:,k),[3,10]);
-     jnew = max(S(S<j));
-     dp = diff_x(  q,jnew,i,S,J);
-     dy = diff_x(j-1,jnew,i,S,J);
-     dz = diff_x(j-2,jnew,i,S,J);
-     u = [0,dp,dy,dz];
-     g = (Jqk * u')';
- end
- end
- 
- function [b,k] = ismember(j,S)
- if isempty(j)
-     b = false;
-     k = nan;
- else
-     for k = 1:length(S)
-         if S(k) == j
-             b = true;
-             return
-         end
-     end
- end
- end
+% d Xjq / d Wi
+function g = diff_x(q,j,i,C)
+j_c = j;
+if ~isempty(C.D{q,j_c,i})
+    g = C.D{q,j,i};
+    return;
+end
+j_q = C.get_j(q);
+if j > j_q
+    j = j_q;
+end
+if q < i || j < i || j > q
+    g = [0,0,0];
+else
+    k = C.get_k(j);
+    if i == j
+        Jqk = C.J{q,k};
+        u = [1;0;0;0;0;0;0;0;0;0];
+        g = (Jqk * u)';
+    else
+        Jqk = C.J{q,k};
+        jnew = max(C.S(C.S<j));
+        dp = diff_x(  q,jnew,i,C);
+        dy = diff_x(j-1,jnew,i,C);
+        dz = diff_x(j-2,jnew,i,C);
+        u = [0,dp,dy,dz];
+        g = (Jqk * u')';
+    end
+end
+C.D{q,j_c,i} = g;
+end
+    

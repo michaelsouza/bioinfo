@@ -5,14 +5,14 @@ function [x,g] = rotors_apply(x,S,W)
     if ~issorted(S)
         error('The index set s must be sorted in ascending order.')
     end
+    % convert to matrix
     [nrows, ncols] = size(x);
-    if ncols > 1
-        ismatrix = false;
-        x = array2matrix(x);
-        [nrows, ncols] = size(x);
+    if nrows == 3 && ncols > nrows
+        x = reshape(x,3,[]);
     end
+    nnodes = length(x);
     % jacobian matrix
-    J = zeros(nrows,3,10,length(S));
+    J = zeros(3,nnodes,10,length(S));
 	
     % applying rotations
     for k = 1:length(S)
@@ -22,46 +22,60 @@ function [x,g] = rotors_apply(x,S,W)
             continue;
         end
         % update x
-        for q = j:length(x)
-            [x(q,:),J(q,:,:,k)] = rotate(w,x(q,:),x(j-1,:),x(j-2,:));
+        for q = j:nnodes
+            [x(:,q),J(:,q,:,k)] = rotate(w,x(:,q),x(:,j-1),x(:,j-2));
         end
     end
     
-    g = zeros(nrows,ncols,length(S));
-    for k = 1:length(S)
-        i = S(k);
-        for q = i:length(x)
-            % largest rotation index that affects Xq
-            j = max(S(S<=q));
-            g(q,:,k) = diff_x(q,j,i,S,J);
+    % calculating jacobian
+    if nargout > 1
+        g = zeros(3,nnodes,length(S));
+        for k = 1:length(S)
+            i = S(k);
+            for q = i:length(x)
+                % largest rotation index that affects Xq
+                j = max(S(S<=q));
+                g(:,q,k) = diff_x(q,j,i,S,J);
+            end
         end
-    end
-    
-    % convert 3D matrix to jacobian
-    % g = d x_i / d w_j
-    if ~ismatrix
-        g_vec = zeros(size(g(:)));
-        g = g_vec;
+        
+        % convert 3D matrix to jacobian
+        % g = d x_i / d w_j
+        g = reshape(g,3*nnodes,[]);
     end
 end
 
-function g = diff_x(q,j,i,S,J)
-% d Xjq / d Wi
-    if q < i || j < i
-        g = [0,0,0];
-    elseif i == j
-        [~,k] = ismember(i, S); 
-        Jqk = reshape(J(q,:,:,k), [3, 10]);
-        u = [1;0;0;0;0;0;0;0;0;0];
-        g = (Jqk * u)';
-    else
-        jnew = max(S(S<j));
-        dp = diff_x(  q,jnew,i,S,J);
-        dy = diff_x(j-1,jnew,i,S,J);
-        dz = diff_x(j-2,jnew,i,S,J);
-        [~,k] = ismember(j,S);
-        Jqk = reshape(J(q,:,:,k),[3,10]);
-        u = [0,dp,dy,dz];
-        g = (Jqk * u')';
-    end
-end
+ % d Xjq / d Wi
+ function g = diff_x(q,j,i,S,J)
+ j = min(j, max(S(S<=q)));
+ [~,k] = ismember(j,S);
+ if q < i || j < i || j > q
+     g = [0,0,0];
+ elseif i == j
+     Jqk = reshape(J(:,q,:,k), [3, 10]);
+     u = [1;0;0;0;0;0;0;0;0;0];
+     g = (Jqk * u)';
+ else
+     Jqk = reshape(J(:,q,:,k),[3,10]);
+     jnew = max(S(S<j));
+     dp = diff_x(  q,jnew,i,S,J);
+     dy = diff_x(j-1,jnew,i,S,J);
+     dz = diff_x(j-2,jnew,i,S,J);
+     u = [0,dp,dy,dz];
+     g = (Jqk * u')';
+ end
+ end
+ 
+ function [b,k] = ismember(j,S)
+ if isempty(j)
+     b = false;
+     k = nan;
+ else
+     for k = 1:length(S)
+         if S(k) == j
+             b = true;
+             return
+         end
+     end
+ end
+ end

@@ -10,4 +10,5 @@ function options = sph_options(varargin)
 	options.rho       = 0.99;
 	options.maxit     = 1000;
 	options.dtol      = 1E-2;
+    options.acc       = 10;
 end

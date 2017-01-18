@@ -9,16 +9,17 @@ function x = sph(G,x,options)
 	rho   = options.rho;
 	maxit = options.maxit;
 	dtol  = options.dtol;
+    acc   = options.acc;
 	fprintf('SPH\n')
 	fprintf('   alpha = %g\n', alpha);
 	fprintf('   tau   = %g\n', tau);
 	fprintf('   rho   = %g\n', rho);
 	fprintf('   maxit = %g\n', maxit);
 	fprintf('   dtol  = %g\n', dtol);
+    fprintf('   acc   = %g\n', acc);
    
 	fx = mdgp_fobj(G,x,dtol);
 	fprintf('   fx    = %g\n\n', fx);
-	% check_xsol(G,x, detailed=True)
 	nit_local  = 0;
 	nit_global = 0;
     
@@ -48,7 +49,7 @@ function x = sph(G,x,options)
         
         df = (fx - fx_old) / fx_old;
         dx = norm(x - x_old) / max(norm(x), 1);
-        
+        speed = ceil(1 + max(0, -acc * log(dx)));
         % check if the points are aligned
         if options.plot
             view_coords(x);
@@ -56,20 +57,20 @@ function x = sph(G,x,options)
         end
         
         if mod(nit_global,20) == 1
-            fprintf(' iter    fx        df       dx      nit   rho     time\n')
+            fprintf(' iter    fx        df       dx      nit   rho     speed   time\n')
         end
         if mod(nit_global,1) > -1
-            fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %3.2f\n', ...
-                nit_global, fx, df, dx, output.iterations, tau, telapsed);
+            fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %5d %6.2f\n', ...
+                nit_global, fx, df, dx, output.iterations, tau, speed, telapsed);
         end
         % stop criteria
         [done,msg] = sph_stop(maxit,nit_global,fx,df,dx);
-        tau = tau * rho^(1 + max(0, -log(dx)));
+        tau = tau * rho^speed;
         % tau = tau * rho;
     end
-	fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %3.2f\n', ...
-		nit_global, fx, df, dx, output.iterations, tau, toc);
-	fprintf('\nFinal results\n')
+    fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %5d %6.2f\n', ...
+        nit_global, fx, df, dx, output.iterations, tau, speed, telapsed);
+    fprintf('\nFinal results\n')
 	fprintf('   nit global = %g\n', nit_global);
 	fprintf('   nit local  = %g\n', nit_local);
 	fprintf('   max_error  = %g\n', mdgp_calculate_erros(G,x));

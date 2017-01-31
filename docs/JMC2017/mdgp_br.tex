@@ -1,0 +1,172 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[brazilian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\newtheorem{definition}{Definition}
+\newcommand{\R}{\mathbb{R}}
+
+\author{Michael Souza\and Carlile Lavor\and Rafael Alves}
+\title{Modeling the Molecular Distance Geometry Problem Using Dihedral Angles}
+\begin{document}
+\maketitle
+\begin{abstract}
+	No presente artigo, revisitamos o problema geométrico de distâncias moleculares (MDGP), mas consideramos a hipótese adicional de existência de uma ordenação particular tal que todas as distâncias $||x_i-x_j||=d_{ij}$ para $|i-j|<3$ são conhecidas. Apesar de restringir o problema, esta hipótese adicional não exclui nenhuma instância real, pois sempre existe ao menos uma ordenação deste tipo em instâncias envolvendo proteínas. Com esta hipótese, reduzimos em 2/3 o número de variáveis do problema original. Além disso, apresentamos um algoritmo especializado para a formulação de otimização do MDGP modificado por esta hipótese.
+\end{abstract}
+
+\section{Introdução}\label{sec:intro}
+Por necessidade, os modelos matemáticos baseiam-se em simplificações da realidade. Quanto maior a abstração, mais extensa é a abrangência dos resultados. No entanto, algumas vezes, hipóteses adicionais não restringem as aplicações práticas.
+
+Na sua formulação mais geral, o problema geométrico de distâncias moleculares (MDGP) consiste em determinar uma configuração $x=(x_1,\ldots,x_n)\in\R^{3n}$ que satisfaça o conjunto de inequações
+\begin{equation}
+l_{ij} \leq ||x_i-x_j|| \leq u_{ij}, \forall (i,j) \in E \subset \{1,\ldots,n\}\times \{1,\ldots,n\},
+\end{equation}
+onde $E$ indica quais coordenadas $x_i$ estão relacionadas. 
+
+Uma abordagem natural para a resolução do MDGP é transformá-lo em um problema de otimização e aplicar um algoritmo padrão de otimização ou alguma heurística especializada. A formulação padrão sugerida por Crippen e Havel \cite{Crippen1988} é o problema de otimização global
+\begin{equation}
+(P) \min_x \left\{f(x)\equiv\sum_{(i,j)\in E}p_{ij}(x_i-x_j)\right\},
+\end{equation}
+onde a função de penalidade $p_{ij}:\R^3\to\R$ é dada por
+\begin{equation}\label{eq:opt_form}
+p_{ij}(x) = \max(l_{ij} - ||x||, 0) + \max(||x|| - u_{ij},0).
+\end{equation}
+É fácil ver que a $f(x)\geq 0$ e $f(x)=0$ se, e somente se, $x$ for uma solução do MDGP. 
+
+As variações mais promissoras desta abordagem levam em conta tanto a não-diferenciabilidade do problema quanto a existência de muitos mínimos locais \cite{More1999,Souza2011}.
+
+\section{Motivação biológica}\label{sec:bio}
+Uma das mais importantes aplicações do MDGP é a determinação de estruturas proteicas usando dados da espectroscopia de ressonância magnética nuclear (RMN). Como é bem sabido, existe uma conexão direta entre as estruturas tridimensionais das proteínas e as funções por elas desempenhadas. As proteínas são compostas por aminoácidos e, apesar de existirem mais de 500 aminoácidos, apenas 22 variações deles ocorrem naturalmente \cite{Atkins2002,Hao2002}. Portanto, cada proteína sintetizada naturalmente pode ser representada unicamente como uma \emph{string}, onde cada caractere representa um dentre 22 aminoácidos diferentes.  Infelizmente ainda não existem métodos suficientemente precisos e robustos que permitam obter a geometria e, portanto, a função de uma proteína a partir do conhecimento da sequência dos resíduos de aminoácidos que a compõem. Ao invés disso, as técnicas experimentais atuais analisam amostras de cada proteína individualmente \cite{Schlick2010}.
+
+As técnicas experimentais de determinação de geometrias proteicas diferen\-ciam-se pela precisão (resolução) e pelos meios (ambientes) em que podem ser aplicadas. Apesar da resolução relativamente baixa, a RMN é uma das técnicas mais aplicadas na determinação de estruturas proteicas (Ver Tabela \eqref{tab:pdb}). Um dos apelos da RMN é a possibilidade de aplicá-la em meios aquosos normalmente encontrados nos organismos vivos. Esta vantagem é importante pois permite analisar aspectos dinâmicos derivados por exemplo da variação de temperatura \cite{Dyson1996}. A RMN não fornece diretamente as posições dos átomos, ao invés disso, ela fornece as distâncias entre pares de hidrogênio cujas distâncias sejam inferiores a 5-6 \AA (\aa ngstr\"{o}ns) \cite{Schlick2010}.
+
+\begin{table}[ht!]
+	\centering
+	\caption{Número de estruturas proteicas no repositório Protein Data Bank (PDB) obtidas pelas diferentes técnicas experimentais (Fonte: PDB - Acessado em 01/30/2017).}\label{tab:pdb}
+	\label{my-label}
+	\begin{tabular}{|l|c|}
+		\hline
+		\textbf{Exp.Method} & \textbf{Proteins} \\ \hline
+		X-RAY               & 105656            \\ \hline
+		NMR                 & 10257             \\ \hline
+		ELECTRON MICROSCOPY & 993               \\ \hline
+		HYBRID              & 97                \\ \hline
+		OTHER               & 181               \\ \hline
+		TOTAL               & 117184            \\ \hline
+	\end{tabular}
+\end{table}
+
+Em geral, moléculas não são estruturas rígidas, ao invés disso elas vibram em frequências típicas. As frequências das vibrações estão relacionadas com a amplitude e a energia envolvidas. As distâncias consideradas no MDGP estão associadas às médias das frequências. Nem todas as distâncias interatômicas precisam ser estimadas pela ressonância. De fato, algumas distâncias interatômicas são típicas e não variam com a geometria específica da proteína pois dependem apenas do tipo da ligação química envolvida e dos elementos envolvidos. Por exemplo, o comprimento de ligações químicas simples e duplas não dependem da forma da proteína \cite{Schlick2010}. Sendo assim, as distâncias interatômicas podem ser divididas em dois grupos. O primeiro formado por distâncias aproximadamente exatas
+\begin{equation}\label{eq:equalities}
+||x_i-x_j|| = d_{ij}
+\end{equation} que não dependem da conformação, mas apenas do tipo da ligação química envolvida. E o segundo grupo,
+\begin{eqnarray}\label{eq:inequalities}
+l_{ij}\leq ||x_i-x_j|| \leq u_{ij},
+\end{eqnarray} formado pelas distâncias imprecisas (desigualdades) estimadas experimentalmente. 
+
+Na formulação original do MDGP não há qualquer diferenciação entre estes dois grupos. No entanto, como apontado por Lavor, em instâncias reais sempre existe uma ordenação atômica $\{k_1,\ldots,k_n\}$ tal que
+\begin{equation}
+||x_{k_i}-x_{k_j}|| = d_{{k_ik_j}}\in\R,\;\;\forall (k_i,k_j)\mbox{ tal que }|k_i-k_j|<3.
+\end{equation}
+Em outras palavras, sempre existe uma enumeração que garante a existência de distâncias exatas conectando um dado átomo aos seus dois sucessores imediatos. Por simplicidade, consideraremos sem perda de generalidade que a ordenação $\{1,\ldots,n\}$ goza de tal propriedade.
+
+\section{Parametrização via ângulos diedrais}\label{sec:params}
+Apesar da simplicidade, esta hipótese de ordenação tem implicações bem sofisticadas. Uma delas é que, a partir do conhecimento das distâncias $d_{ij}$ para $|i-j|<3$, podemos determinar de maneira única, a menos de translações e rotações, cada triângulo $T_k$ envolvendo a tripla $(k,k+1,k+2)$ de átomos consecutivos. Esta implicação pode ser estendida para um número arbitrário de átomos. Por exemplo, à cada quádrupla de átomos consecutivos, digamos, $(k, k+1, k+2, k+3)$, podemos associar uma estrutura formada pelos triângulos $T_k$ e $T_{k+1}$ tendo a aresta $(k+1,k+2)$ em comum. De maneira geral, uma sequência $(1,2,...,n)$ determinará uma estrutura ordenada $T=\{T_1,\ldots,T_{n-2}\}$ formada por $n-2$ triângulos, onde cada triângulo $T_k$ compartilha a aresta $(k,k+1)$ com seu antecessor $T_{k-1}$ e a aresta $(k+1,k+2)$ com seu sucessor $T_{k+1}$. Note que o único movimento relativo possível entre dois triângulos que compartilham uma aresta é uma rotação em torno desta mesma aresta. Sendo assim, os graus de liberdade ou flexibilidade da estrutura $T$ são dados pelos ângulos diedrais $\omega_k$ entre os triângulos sucessivos $T_{k}$ e $T_{k+1}$. Em outras palavras, a estrutura proteica pode ser caracterizada exclusivamente pelos ângulos diedrais $\omega_k$.
+
+Se quisermos modificar apenas a distância relativa entre os triângulos $T_{k}$ e $T_{k+1}$, basta-nos rotacionar todos os triângulos $T_j$ para $j>k$ em torno da aresta $(k+1,k+2)$ pois, desta forma, o único par de triângulos vizinhos que apresentarão movimento relativo será $(T_{k},T_{k+1})$. Note que rotacionar os triângulos $T_j$ para $j>k$ em torno da aresta $(k+1,k+2)$ significa simplesmente rotacionar os vértices $j$ para $j>(k+2)$ em torno dessa mesma aresta. Ou seja, podemos varrer todo o espaço de configurações possíveis através de rotações em torno das arestas compartilhadas por triângulos vizinhos.
+
+Concluímos portanto que a hipótese de ordenação reduz o MDGP ao problema de encontrar uma configuração $T=\{T_1,T_2,\ldots,T_{n-2}\}$ de triângulos com vértices $x_j\in\R^{3}$ que atendam as restrições de desigualdade da Eq.\eqref{eq:inequalities}, pois as de igualdade são automaticamente satisfeitas na definição dos triângulos $T_k$. Uma vez que as configurações de $T$ diferenciam-se exclusivamente pelos ângulos diedrais $\omega_k$, então a solução $x$ do MDGP passa a ser determinada por $\omega=(\omega_1,\ldots,\omega_{n-3})$. Em outras palavras, obtemos um novo problema $\mbox{MDGP}_\omega$ na variável $x(\omega)$
+\begin{definition}[MDGP$_\omega$]
+	Determine $\omega \in \R^{n-3}$ (vetor de ângulos diedrais) tal que
+	$$l_{ij} \leq ||x_i(\omega) - x_j(\omega)|| \leq u_{ij}, \forall (i,j) \in E.$$
+\end{definition}
+
+A formulação MDGP$_\omega$ apresenta algumas vantagens. A primeira delas é a redução no número de variáveis do problema. Ao invés de $3n$ coordenadas reais, passamos a $n-3$ ângulos diedrais. Além disso, em instâncias reais podem existir restrições para os ângulos formados por determinadas ligações químicas o que seria muito mais complicado de caracterizar em termos das coordenadas Cartesianas do que usando os ângulos diedrais. Contudo, estas vantagens são obtidas ao custo do aumento da complexidade da representação e, consequentemente, da avaliação das funções e derivadas envolvidas.
+
+\section{Calculando rotações}\label{sec:rot}
+Podemos escrever explicitamente $x(\omega)$ utilizando rotações. A obtenção de uma representação explícita de $x(\omega)$ será fundamental para definirmos a função objetivo da formulação de otimização do problema MDGP$_\omega$ e calcularmos as derivadas normalmente requeridas pelos algoritmos de otimização mais eficientes. 
+
+Como dito anteriormente, o movimento relativo do triângulo $T_{k+1}$ com respeito ao triângulo $T_{k}$ é dado pela rotação do vértice $x_{k+3}$ ao redor da aresta $(k+1,k+2)$ compartilhada por $T_k$ e $T_{k+1}$. Mais ainda, se quisermos modificar apenas o ângulo $\omega_k$, então teremos que aplicar a mesma rotação em todos os vértices $x_j$ para $j>(k+2)$. 
+
+Uma vez que as rotações cumprem papel fundamental na argumentação, será útil adotar uma representação sintética para elas. Sendo assim, defina $R(\theta,p,u,v)$ como sendo o resultado da rotação de ângulo $\theta$ do ponto $p\in\R^3$ em torno do eixo dado pela reta que passa pelos pontos $u,v\in\R^3$. A expressão analítica para o ponto $y=R(\theta,p,u,v)\in\R^3$ é dada por
+\begin{eqnarray}\label{eq:rot_y}
+\nonumber y&=&
+\left[
+\begin{array}{c}
+z_1(w_2^2+w_3^2)-w_1(\kappa-z_1w_1)\\
+z_2(w_1^2+w_3^2)-w_2(\kappa-z_2w_2)\\
+z_3(w_1^2+w_2^2)-w_3(\kappa-z_3w_3)
+\end{array}
+\right](1-\cos(\theta)) \\
+&+&
+\left[
+\begin{array}{c}
+-z_3w_2+z_2w_3-w_3p_2+w_2p_3\\
+ z_3w_1-z_1w_3+w_3p_1-w_1p_3\\
+-z_2w_1+z_1w_2-w_2p_2+w_1p_2
+\end{array}
+\right] \sin(\theta) + \cos(\theta)p
+\end{eqnarray}
+onde $w=(u-v)/||u-v||$ é a direção normalizada e $\kappa=w\cdot(u-p)$ \cite{Murray2013}.
+
+A ideia é representar $x(\omega)$ através de rotações sucessivas. Para isto, precisaremos de uma configuração inicial $x^0=(x_1^0,\ldots,x_n^0)\in\R^{3n}$ que atenda às restrições da Eq.\eqref{eq:equalities} e tenha ângulos diedrais $\omega_k=0$. Finalmente, partindo da configuração de referência $x^0$, construiremos uma sequência $x^1(\omega),\ldots,x^{n-2}(\omega)\in\R^{3n}$ e atribuiremos $x(\omega)=x^{n-2}(\omega)$.
+
+O passo iterativo na construção da sequência $\{x^i\}_{i=1}^{n-2}$ é dado por
+\begin{equation}\label{eq:rot_x}
+x^i_j=x^i_j(\omega)=
+\begin{cases}
+x^{i-1}_j(\omega),&\mbox{se } j < (i+3);\\
+R(\omega_i,x^{i-1}_j(\omega),x^{i-1}_{i+1}(\omega),x^{i-1}_{i+2}(\omega)),&\mbox{caso contrário,}
+\end{cases}
+\end{equation}
+onde $x^i_j\in\R^3$ representa a posição ocupada pelo $j$-ésimo vértice após a aplicação da rotação associada a $\omega_i$. Pela definição, a configuração $x^1$ é obtida a partir de $x^0$ aplicando a rotação de ângulo $\omega_1$ e eixo $(x_2^0,x_3^0)$ em todos os vértices dos triângulos $T_k$ para $k>1$. Com isto, todos os trângulos exceto $T_1$ são rotacionados e, mais ainda, o ângulo diedral entre $T_1$ e $T_2$ será $\omega_1$. Note que esta rotação modifica (atualiza) todas as coordenadas $x_j^0$ para $j\geq 4$. No segundo passo, a configuração $x^2$ é obtida a partir de $x^1$, agora rotacionando os triângulos $T_k$ para $k>2$. Desta forma, apenas o ângulo diedral entre $T_2$ e $T_3$ é modificado e, mais ainda, seu valor passa a ser exatamente $\omega_2$. O processo é repetido sucessivamente até que ao final ($i=n-2$), todos os ângulos diedrais tenham sido fixados. É importante salientar que este procedimento permite definir arbitrariamente cada um dos ângulos diedrais.
+
+As derivadas $\sigma_{jk}^{i}=\partial x_j^i(\omega)/\partial \omega_{k}$ podem ser calculadas diretamente da Eq.\eqref{eq:rot_x}. Note que a rotação de ângulo $\omega_k$ só afeta os pontos de índice $j>(k+3)$ das configurações $x^i$ para $i\geq k$. Portanto, usando a regra da cadeia,
+\begin{equation}\label{eq:rot_diff}
+\sigma_{jk}^{i}=\frac{\partial x_j^i(\omega)}{\partial \omega_{k}}=
+\nabla^t R(\omega_i,x^{i-1}_j,x^{i-1}_{i+1},x^{i-1}_{i+2})(\delta_{ik},\sigma_{jk}^{i-1},\sigma_{{i+1},k}^{i-1},\sigma_{{i+2},k}^{i-1})
+\end{equation}
+se $j>(k+3)$ com $i\geq k$ e $\sigma^i_{jk}=0$ caso contrário.
+
+Apesar de trabalhosa, a derivada (Jacobiano) da rotação $R$ pode ser calculada a partir da Eq.\eqref{eq:rot_y} (Ver Apêndice ??). Com isto podemos aplicar qualquer dos métodos de otimização do MDGP na formulação MDGP$_\omega$.
+
+
+
+\section{Experimentos Computacionais}\label{sec:numexp}
+Nesta seção apresentaremos alguns resultados computacionais a partir da formulação MDGP$_\omega$. Nosso objetivo é ilustrar a validade das fórmulas apresentadas na seção anterior e a aplicabilidade da proposta juntamente com uma abordagem estabelecida na literatura. Para isto, consideraremos a formulação
+\begin{equation}
+(P_\omega) \min_\omega \sum_{(i,j)\in E} \max(l_{ij} - ||x_i(\omega)-x_j(\omega)||, 0) + \max(||x_i(\omega)-x_j(\omega)|| - u_{ij},0)
+\end{equation}
+derivada da formulação de otimização da Eq.\eqref{eq:opt_form}, onde $x(\omega)=(x_1(\omega),\ldots,x_n(\omega))\in\R^{3n}$ é dado pela Eq.\eqref{eq:rot_x} e as variáveis de controle são os ângulos diedrais $\omega=(\omega_1,\ldots,\omega_{n-3})\in\R^{n-3}$. 
+
+Afim de testarmos a validade das derivadas de $x(\omega)$ utilizaremos a heurística $SPH$ baseada em suavização e penalização hiperbólicas apresentada em \cite{bibid}. Nesta abordagem, as funções $||y||$ para $y\in\R^3$ e $\max\{\alpha,0\}$ com $\alpha\in\R$ são substituídas respectivamente pelas aproximações 
+\begin{equation}
+\theta_\tau(y)=\sqrt{\tau^2+\sum_{k=1}^3y_k^2}\;\;\;\mbox{ e }\;\;\; \phi_\tau(\alpha)=\alpha + \sqrt{\alpha^2 + \tau}.
+\end{equation}
+O parâmetro $\tau$ controla a qualidade da aproximação (Ver Fig.). De fato, temos que $\theta_\tau(y)=||y||$ e $\phi_\tau(\alpha)=\max\{y,0\}$ quando $\tau\to 0$. Com estas substituições, obtemos uma formulação $(P_{\tau\omega})$ diferenciável e arbitrariamente próxima do problema $(P_\omega)$. Além da diferenciabilidade, as funções $\theta_\tau$ e $\phi_\tau$ reduzem o número de mínimos locais ao convexificar as parcelas da função objetivo do problema $(P_{\tau\omega})$. No entanto, a convexificação é alcançada com valores $\tau$ suficientemente grandes fazendo com que o problema suavizado $(P_{\tau\omega})$ seja muito diferente do problema original. Para remediar esta situação, os autores sugerem que uma sequência de problemas $(P_{\tau_i\omega})$ com $\tau_0>\tau_1 > \ldots > \tau_m$ com $\tau_m\to 0$ seja considerada. A solução do problema $(P_{\tau_i\omega})$ é tomada como ponto inicial do problema seguinte. Desta forma, como experimentalmente ilustrado, as trajetórias que convergem para mínimos locais menos profundos são geralmente evitadas.
+
+A heurística $SPH$ e as ideias expressas nas Eqs.\eqref{eq:rot_y}-\eqref{eq:rot_diff} foram implementadas em Matlab. Os código-fontes podem ser obtidos  \url{https://github.com/michaelsouza/bioinfo/tree/master/isbra/source.}
+
+Os códigos desenvolvidos foram testados em instâncias com $n=8, 16$ e 32 pontos a partir de configurações $x\in\R^{3n}$ regeradas aleatoriamente. Em cada uma destas instâncias, consideramos conhecidas todas as distâncias $d_{ij}=||x_i-x_j||$ para $|i-j|<3$ e estabelecemos limites $l_{ij}=(1-\epsilon)d_{ij}$ e $u_{ij}=(1+\epsilon)d_{ij}$ com $\epsilon=0.1$ para as distâncias $d_{ij}<5$ com $|i-j|\geq 3$. Os arquivos contendo as instâncias podem ser obtidos em \url{https://github.com/michaelsouza/bioinfo/tree/master/isbra/instances.}.
+
+Os resultados comparando o desempenho da heurística $SPH$ com o da versão $SPH_\omega$ baseada nos ângulos diedrais podem ser vistos na Tabela \eqref{tab:results}. Foram considerados os mesmos pontos iniciais gerados aleatoriamente nas duas alternativas já que ambas fazem uso de minimizações locais. Como se vê, a proposta  $SPH_\omega$ é efetiva na obtenção de soluções e apresenta número de iterações menor que o da versão original. No entanto, estes resultados promissores são atenuados pelo custo elevado na avaliação da função objetivo e de suas derivadas.
+
+\section{Conclusões}\label{sec:conclusions}
+Neste trabalho, apresentamos uma formulação do problema geométrico de distâncias moleculares (MDGP) baseada em ângulos diedrais ao invés da tradicional abordagem que faz uso das coordenadas Cartesianas. Esta formulação reduz em 2/3 o número de variáveis da formulação original.
+
+Além da formulação, apresentamos os cálculos das derivadas das coordenadas Cartesianas em função dos ângulos diedrais. Finalmente, mostramos através de experimentos numéricos que nossa proposta pode ser utilizada em conjunto com heurísticas baseadas em coordenadas Cartesianas. 
+
+Os códigos-fonte e as instâncias desenvolvidos podem ser obtidos no repositório \url{https://github.com/michaelsouza/bioinfo/tree/master/isbra/.}.
+
+\section{Agradecimentos}\label{sec:thanks}
+Universidade Federal do Ceará, Universidade Estadual de Campinas, CEMEAI-SP.
+
+\bibliographystyle{abbrv}
+\bibliography{references}
+
+\end{document}

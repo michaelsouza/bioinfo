@@ -1,0 +1,88 @@
+function [x,fx,nit_global,nit_local,total_time,msg] = sph(G,x,options)
+    options.plot = ~strcmp(options.plot, 'off');
+	nedges = G.nedges;
+	D     = (G.l + G.u) / 2.0;
+	d     = sort(D);
+%     	tau   = d(ceil(options.tau_level * nedges));
+    tau   = 0.001 * min(d);
+	alpha = options.alpha;
+	rho   = options.rho;
+	maxit = options.maxit;
+	dtol  = options.dtol;
+    acc   = options.acc;
+	fprintf('SPH\n')
+	fprintf('   alpha = %g\n', alpha);
+	fprintf('   tau   = %g\n', tau);
+	fprintf('   rho   = %g\n', rho);
+	fprintf('   maxit = %g\n', maxit);
+	fprintf('   dtol  = %g\n', dtol);
+    fprintf('   acc   = %g\n', acc);
+   
+	fx = mdgp_fobj(G,x);
+	fprintf('   fx    = %g\n\n', fx);
+	nit_local  = 0;
+	nit_global = 0;
+    
+    FIG = [];
+    if options.plot
+        FIG  = figure;
+        AXES = axes('Parent',FIG);
+        view(AXES,[32 16]);
+        box  on;
+        grid on;
+    end
+
+    done = false;
+    total_time = 0;
+    while ~done
+        nit_global = nit_global + 1;
+        fx_old = fx;
+        x_old  = x;
+        % defining and solving unconstrained problem
+        f = @(y) mdgp_fobj_smooth(alpha, tau, G, y);
+        x = x(:); % matrix to vector
+        
+        tic
+        [x,~,~,output] = fminunc(f, x, options.optim);
+        telapsed = toc;
+        total_time = total_time + telapsed;
+        
+        x  = reshape(x,3,[]); % vector to matrix
+        fx = mdgp_fobj(G,x);
+        nit_local = nit_local + output.iterations;
+        
+        df = (fx - fx_old) / fx_old;
+        dx = norm(x - x_old) / max(norm(x), 1);
+        speed = ceil(1 + max(0, -acc * log(dx)));
+        % check if the points are aligned
+        if options.plot
+            view_coords(x);
+            drawnow
+        end
+        
+        if mod(nit_global,20) == 1
+            fprintf(' iter    fx        df       dx      nit   rho     speed   time\n')
+        end
+        if mod(nit_global,1) > -1
+            fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %5d %6.2f\n', ...
+                nit_global, fx, df, dx, output.iterations, tau, speed, telapsed);
+        end
+        % stop criteria
+        [done,msg] = sph_stop(G, x, dtol, maxit, nit_global, df, dx);
+        tau = tau * rho^speed;
+        % tau = tau * rho;
+    end
+    if ~isempty(FIG)
+        FIG.delete;
+    end
+    fprintf('%5d %5.2E % 5.2E %5.2E %4d  %5.2E %5d %6.2f\n', ...
+        nit_global, fx, df, dx, output.iterations, tau, speed, telapsed);
+   
+    fprintf('\nFinal results\n')
+	fprintf('   nit global = %g\n', nit_global);
+	fprintf('   nit local  = %g\n', nit_local);
+	fprintf('   fobj       = %g\n', fx);
+    fprintf('   tElapsed   = %3.2fs\n', total_time);
+    fprintf('   message    = %s\n', msg);
+    close 
+end

@@ -1,0 +1,201 @@
+n,dmax,nedges,method,time_in_sec,fobj,nit_global,nit_local,solved,msg,uid
+N8,D5.00,22,sph,0.409014,7.89166e-06,1,401,1,"A solution has been found",891fb257-ad85-453c-84cd-fdc726042024
+N8,D5.00,22,rot,0.450941,7.54952e-15,3,46,1,"A solution has been found",891fb257-ad85-453c-84cd-fdc726042024
+N8,D5.00,22,sph,0.354003,2.0993e-05,1,401,1,"A solution has been found",91ac22e3-b849-4fa5-952b-5f6a3d4419cf
+N8,D5.00,22,rot,1.24703,2.73115e-14,10,134,1,"A solution has been found",91ac22e3-b849-4fa5-952b-5f6a3d4419cf
+N8,D5.00,22,sph,0.246458,0.000343417,1,249,1,"A solution has been found",b9f34c06-c840-4ed3-bb72-eb1e5503a255
+N8,D5.00,22,rot,1.30501,0.00881765,9,132,1,"A solution has been found",b9f34c06-c840-4ed3-bb72-eb1e5503a255
+N8,D5.00,22,sph,0.319172,1.62537e-05,1,358,1,"A solution has been found",1dbeffd1-8233-4931-bf51-ace884575958
+N8,D5.00,22,rot,0.775135,0.0231769,5,84,1,"A solution has been found",1dbeffd1-8233-4931-bf51-ace884575958
+N8,D5.00,22,sph,0.21045,2.26992e-05,1,246,1,"A solution has been found",66e361dd-9d15-41b5-80fc-41f9510e934b
+N8,D5.00,22,rot,1.06264,0.0345522,8,109,1,"A solution has been found",66e361dd-9d15-41b5-80fc-41f9510e934b
+N8,D5.00,22,sph,0.41975,0.0235784,13,291,0,"Solution stagnation",89e2c743-ada6-4731-b06d-dea25536f75d
+N8,D5.00,22,rot,0.736082,0.0278052,4,70,1,"A solution has been found",89e2c743-ada6-4731-b06d-dea25536f75d
+N8,D5.00,22,sph,0.353255,1.77258e-05,1,401,1,"A solution has been found",fb411d84-77bc-4749-8f25-b769ab1dd68e
+N8,D5.00,22,rot,0.430712,4.26326e-14,3,46,1,"A solution has been found",fb411d84-77bc-4749-8f25-b769ab1dd68e
+N8,D5.00,22,sph,0.271449,1.94014e-05,1,308,1,"A solution has been found",ce9b3e72-9e87-45b6-9e03-70baf4a78073
+N8,D5.00,22,rot,0.749304,2.75335e-14,5,81,1,"A solution has been found",ce9b3e72-9e87-45b6-9e03-70baf4a78073
+N8,D5.00,23,sph,0.373307,1.76883e-05,1,401,1,"A solution has been found",34188c22-f3f4-4797-8d27-9cb52b731fcc
+N8,D5.00,23,rot,0.414957,3.19744e-14,3,45,1,"A solution has been found",34188c22-f3f4-4797-8d27-9cb52b731fcc
+N8,D5.00,23,sph,0.407918,0.0572035,11,292,0,"Solution stagnation",031d5bd8-a37e-4755-9b4c-d3c411daa8c3
+N8,D5.00,23,rot,3.19197,0.152288,22,288,0,"Solution stagnation",031d5bd8-a37e-4755-9b4c-d3c411daa8c3
+N8,D5.00,23,sph,0.36031,2.39216e-05,1,401,1,"A solution has been found",8839f835-a58b-4c65-8b1f-b61ea469f0c9
+N8,D5.00,23,rot,0.814458,6.21725e-15,5,92,1,"A solution has been found",8839f835-a58b-4c65-8b1f-b61ea469f0c9
+N8,D5.00,23,sph,0.620789,0.039376,16,423,0,"Solution stagnation",34adda89-cab6-49e4-b467-45104774430a
+N8,D5.00,23,rot,0.575589,1.24345e-14,3,58,1,"A solution has been found",34adda89-cab6-49e4-b467-45104774430a
+N8,D5.00,23,sph,0.404712,0.0877952,17,190,0,"Solution stagnation",6b6cdb08-3b4c-4942-b0be-c468956c413c
+N8,D5.00,23,rot,0.495664,1.79856e-14,3,51,1,"A solution has been found",6b6cdb08-3b4c-4942-b0be-c468956c413c
+N8,D5.00,24,sph,0.312372,0.00240437,1,308,1,"A solution has been found",a7c4a82f-484e-450b-b5e2-e182c7b89c1e
+N8,D5.00,24,rot,1.61288,6.88338e-15,8,158,1,"A solution has been found",a7c4a82f-484e-450b-b5e2-e182c7b89c1e
+N8,D5.00,24,sph,0.751129,0.295727,16,482,0,"Solution stagnation",290ddf0f-127d-4fe7-b106-c8d8b7cccb78
+N8,D5.00,24,rot,0.520519,7.77156e-15,3,51,1,"A solution has been found",290ddf0f-127d-4fe7-b106-c8d8b7cccb78
+N8,D5.00,25,sph,0.396446,3.25741e-05,1,327,1,"A solution has been found",5fa42e46-9868-417c-9406-c9c56e196a6a
+N8,D5.00,25,rot,0.480374,2.75335e-14,3,48,1,"A solution has been found",5fa42e46-9868-417c-9406-c9c56e196a6a
+N8,D5.00,25,sph,0.502956,2.1146e-05,1,401,1,"A solution has been found",188e831d-378d-489c-a410-5b0712eee540
+N8,D5.00,25,rot,0.582681,3.88578e-14,3,57,1,"A solution has been found",188e831d-378d-489c-a410-5b0712eee540
+N8,D5.00,25,sph,0.544843,7.69773e-06,1,401,1,"A solution has been found",30a42c56-3c6e-45c8-8d2e-b97c860a9ead
+N8,D5.00,25,rot,0.772716,1.57652e-14,4,81,1,"A solution has been found",30a42c56-3c6e-45c8-8d2e-b97c860a9ead
+N8,D5.00,25,sph,0.477809,8.28938e-06,1,401,1,"A solution has been found",47daa56b-1358-4cfa-8627-c2c919f2f98d
+N8,D5.00,25,rot,0.799716,1.39888e-14,4,88,1,"A solution has been found",47daa56b-1358-4cfa-8627-c2c919f2f98d
+N8,D5.00,25,sph,0.527639,0.559743,13,420,0,"Function stagnation",4be63f10-7141-4688-b60e-afbd8ef89105
+N8,D5.00,25,rot,0.410223,7.10543e-15,3,44,1,"A solution has been found",4be63f10-7141-4688-b60e-afbd8ef89105
+N8,D5.00,25,sph,0.302261,0.728167,11,159,0,"Solution stagnation",75edc5aa-fa1c-42a9-aa6b-7083807939a3
+N8,D5.00,25,rot,0.515264,9.99201e-15,3,54,1,"A solution has been found",75edc5aa-fa1c-42a9-aa6b-7083807939a3
+N8,D5.00,25,sph,0.167063,0.000356007,1,144,1,"A solution has been found",3cbf80d8-b329-413b-b31d-39d33da558b1
+N8,D5.00,25,rot,0.537554,1.06581e-14,3,54,1,"A solution has been found",3cbf80d8-b329-413b-b31d-39d33da558b1
+N8,D5.00,25,sph,0.405152,0.284217,14,251,0,"Solution stagnation",6ddcbddf-d3d8-4f4b-a8bd-870a2eeb8623
+N8,D5.00,25,rot,0.605414,1.31006e-14,3,62,1,"A solution has been found",6ddcbddf-d3d8-4f4b-a8bd-870a2eeb8623
+N8,D5.00,25,sph,0.398818,3.02221e-05,1,401,1,"A solution has been found",4151157a-4cbf-4525-8b4b-4a4b1b4634d6
+N8,D5.00,25,rot,1.08689,1.28786e-14,5,114,1,"A solution has been found",4151157a-4cbf-4525-8b4b-4a4b1b4634d6
+N8,D5.00,25,sph,0.396131,2.19759e-05,1,401,1,"A solution has been found",558747fc-7cbc-4c66-952f-dbcbc29a0d23
+N8,D5.00,25,rot,1.03396,1.37668e-14,5,110,1,"A solution has been found",558747fc-7cbc-4c66-952f-dbcbc29a0d23
+N8,D5.00,25,sph,0.403447,9.65016e-06,1,401,1,"A solution has been found",7ec12a0c-bbc0-4083-9add-a0761e39e589
+N8,D5.00,25,rot,0.717787,1.62093e-14,3,69,1,"A solution has been found",7ec12a0c-bbc0-4083-9add-a0761e39e589
+N8,D5.00,25,sph,0.323512,0.000216367,1,328,1,"A solution has been found",d43cfea0-7c80-44c1-a98a-54e49a1e1731
+N8,D5.00,25,rot,0.610958,2.53131e-14,3,65,1,"A solution has been found",d43cfea0-7c80-44c1-a98a-54e49a1e1731
+N8,D5.00,25,sph,0.394116,0.135464,13,234,0,"Solution stagnation",d8e9bac7-2005-4b42-90f7-33460f67fab2
+N8,D5.00,25,rot,1.62469,0.00789972,8,170,1,"A solution has been found",d8e9bac7-2005-4b42-90f7-33460f67fab2
+N8,D5.00,25,sph,0.457949,0.354181,12,267,0,"Solution stagnation",0f281a78-ba3d-4cea-a7a2-c7f9a0d41a3b
+N8,D5.00,25,rot,0.480754,0.0147807,3,45,1,"A solution has been found",0f281a78-ba3d-4cea-a7a2-c7f9a0d41a3b
+N8,D5.00,25,sph,0.339878,0.317938,12,192,0,"Solution stagnation",1c834541-d286-4097-93d4-6d125cbfcb2b
+N8,D5.00,25,rot,0.795834,2.04281e-14,4,84,1,"A solution has been found",1c834541-d286-4097-93d4-6d125cbfcb2b
+N8,D5.00,25,sph,0.432035,0.422817,14,273,0,"Solution stagnation",5e4e550c-5b1c-40b4-a198-0fb3aad18b20
+N8,D5.00,25,rot,0.709946,1.13243e-14,3,70,1,"A solution has been found",5e4e550c-5b1c-40b4-a198-0fb3aad18b20
+N8,D5.00,26,sph,0.398887,8.14174e-06,1,395,1,"A solution has been found",130f1872-145a-4418-9162-7d9ac91681bd
+N8,D5.00,26,rot,0.847435,3.93019e-14,4,83,1,"A solution has been found",130f1872-145a-4418-9162-7d9ac91681bd
+N8,D5.00,26,sph,0.183234,0.037637,1,143,1,"A solution has been found",6b41f1c1-26a1-48f3-acfb-54cef9bf4277
+N8,D5.00,26,rot,0.720771,1.84297e-14,4,74,1,"A solution has been found",6b41f1c1-26a1-48f3-acfb-54cef9bf4277
+N8,D5.00,26,sph,0.489759,0.192104,18,243,0,"Solution stagnation",6d6144be-7cfa-48e0-9592-35b131cc4d01
+N8,D5.00,26,rot,1.03349,0.00848266,5,112,1,"A solution has been found",6d6144be-7cfa-48e0-9592-35b131cc4d01
+N8,D5.00,26,sph,0.170316,3.1867e-05,1,170,1,"A solution has been found",0863b56d-1050-4a87-bc61-04a93c15400b
+N8,D5.00,26,rot,0.84341,1.86517e-14,4,92,1,"A solution has been found",0863b56d-1050-4a87-bc61-04a93c15400b
+N8,D5.00,26,sph,0.274101,0.000181796,1,280,1,"A solution has been found",0b5b0159-469c-4f82-a8f0-8f92ef94f682
+N8,D5.00,26,rot,1.64056,0.0185203,8,167,1,"A solution has been found",0b5b0159-469c-4f82-a8f0-8f92ef94f682
+N8,D5.00,26,sph,0.361849,0.034083,9,243,0,"Solution stagnation",0dc7e61d-00fc-4f70-b679-e52468968876
+N8,D5.00,26,rot,0.583899,9.76996e-15,3,62,1,"A solution has been found",0dc7e61d-00fc-4f70-b679-e52468968876
+N8,D5.00,26,sph,0.50808,0.229898,13,328,0,"Solution stagnation",2b7176e8-ba4b-404f-afa1-736fd971ee88
+N8,D5.00,26,rot,0.978698,9.32587e-15,5,105,1,"A solution has been found",2b7176e8-ba4b-404f-afa1-736fd971ee88
+N8,D5.00,26,sph,0.418747,0.681863,12,294,0,"Solution stagnation",ed4bdff2-3113-41d6-8293-d46e5d6b1789
+N8,D5.00,26,rot,0.54808,9.32587e-15,3,55,1,"A solution has been found",ed4bdff2-3113-41d6-8293-d46e5d6b1789
+N8,D5.00,26,sph,0.442345,0.000101762,1,401,1,"A solution has been found",5666fcf1-4512-42f5-9681-d6876f5ddd3c
+N8,D5.00,26,rot,0.562392,1.28786e-14,3,61,1,"A solution has been found",5666fcf1-4512-42f5-9681-d6876f5ddd3c
+N8,D5.00,26,sph,0.422851,0.0324887,10,315,0,"Solution stagnation",378acae1-6664-46fa-a2bd-aaa654679ef2
+N8,D5.00,26,rot,0.759834,1.17684e-14,3,58,1,"A solution has been found",378acae1-6664-46fa-a2bd-aaa654679ef2
+N8,D5.00,27,sph,0.318718,0.00153608,1,284,1,"A solution has been found",a88f228d-6f76-4d28-9551-e0a6499d9ebd
+N8,D5.00,27,rot,2.06147,0.0171037,9,208,1,"A solution has been found",a88f228d-6f76-4d28-9551-e0a6499d9ebd
+N8,D5.00,27,sph,0.434456,1.1105e-05,1,401,1,"A solution has been found",2554bc97-dafe-4561-8183-e37d4dd1409d
+N8,D5.00,27,rot,0.54926,2.68674e-14,3,59,1,"A solution has been found",2554bc97-dafe-4561-8183-e37d4dd1409d
+N8,D5.00,27,sph,0.384678,8.13993e-06,1,363,1,"A solution has been found",7e59d897-60f8-442d-a1a2-6c4e0aba7e59
+N8,D5.00,27,rot,0.789786,9.76996e-15,4,85,1,"A solution has been found",7e59d897-60f8-442d-a1a2-6c4e0aba7e59
+N8,D5.00,27,sph,0.110649,0.00229539,1,84,1,"A solution has been found",e60c215d-1800-45db-bd8a-9ee0a34c045c
+N8,D5.00,27,rot,1.39301,2.55351e-14,7,150,1,"A solution has been found",e60c215d-1800-45db-bd8a-9ee0a34c045c
+N8,D5.00,27,sph,0.422454,6.32636e-06,1,401,1,"A solution has been found",935237f0-412b-4966-bc98-28cdb829f494
+N8,D5.00,27,rot,2.00078,0.0617496,9,210,1,"A solution has been found",935237f0-412b-4966-bc98-28cdb829f494
+N8,D5.00,27,sph,0.509838,0.0416056,13,335,0,"Solution stagnation",5126d0fe-b46f-4a91-9429-6ec9f27f2592
+N8,D5.00,27,rot,1.09331,2.17604e-14,5,117,1,"A solution has been found",5126d0fe-b46f-4a91-9429-6ec9f27f2592
+N8,D5.00,27,sph,0.515738,0.191205,20,257,0,"Solution stagnation",bdd686a0-9944-413e-870f-305ac7072954
+N8,D5.00,27,rot,0.904084,2.4869e-14,3,91,1,"A solution has been found",bdd686a0-9944-413e-870f-305ac7072954
+N8,D5.00,28,sph,0.287526,8.14813e-06,1,258,1,"A solution has been found",c6a7be40-bdbe-4670-97f2-87afa2f6b7f4
+N8,D5.00,28,rot,1.05417,2.53131e-14,5,115,1,"A solution has been found",c6a7be40-bdbe-4670-97f2-87afa2f6b7f4
+N8,D5.00,28,sph,0.176486,8.14629e-06,1,155,1,"A solution has been found",56722555-1e06-4be9-8a2b-0ced1205df18
+N8,D5.00,28,rot,0.859333,9.76996e-15,4,93,1,"A solution has been found",56722555-1e06-4be9-8a2b-0ced1205df18
+N8,D5.00,28,sph,0.54315,0.125658,19,269,0,"Solution stagnation",8e807e6d-b280-4cc8-9976-75f22dbdf594
+N8,D5.00,28,rot,3.52976,0.245233,19,324,0,"Solution stagnation",8e807e6d-b280-4cc8-9976-75f22dbdf594
+N8,D5.00,28,sph,0.609827,0.188384,15,418,0,"Solution stagnation",12a54d62-02ae-4166-a63f-414bd7952aac
+N8,D5.00,28,rot,0.610847,0.00753501,3,64,1,"A solution has been found",12a54d62-02ae-4166-a63f-414bd7952aac
+N8,D5.00,28,sph,0.395006,8.14893e-06,1,364,1,"A solution has been found",4d8972eb-acd3-4cb5-ac1e-4b5f87875bf4
+N8,D5.00,28,rot,1.0551,2.93099e-14,5,115,1,"A solution has been found",4d8972eb-acd3-4cb5-ac1e-4b5f87875bf4
+N8,D5.00,28,sph,0.335494,0.203026,12,185,0,"Solution stagnation",becb1464-101e-486e-b0e4-770d430a97b7
+N8,D5.00,28,rot,3.50732,0.255976,20,329,0,"Solution stagnation",becb1464-101e-486e-b0e4-770d430a97b7
+N8,D5.00,28,sph,0.253331,8.13498e-06,1,221,1,"A solution has been found",c2ec551a-fd23-435f-8912-c05a1a812b2c
+N8,D5.00,28,rot,3.89218,0.0981176,20,348,0,"Solution stagnation",c2ec551a-fd23-435f-8912-c05a1a812b2c
+N8,D5.00,28,sph,0.464423,8.16124e-06,1,383,1,"A solution has been found",dc3d92ed-a07d-45d3-b0f7-cb42b6e73dd4
+N8,D5.00,28,rot,0.896643,1.84297e-14,4,86,1,"A solution has been found",dc3d92ed-a07d-45d3-b0f7-cb42b6e73dd4
+N8,D5.00,28,sph,0.263377,5.41491e-06,1,215,1,"A solution has been found",f2db888b-78db-47e5-942e-d44b3beb4a4e
+N8,D5.00,28,rot,1.26157,3.19744e-14,6,128,1,"A solution has been found",f2db888b-78db-47e5-942e-d44b3beb4a4e
+N8,D5.00,28,sph,0.33604,0.0495867,11,176,0,"Solution stagnation",02f3ab55-c206-44fa-9a83-529afc05a470
+N8,D5.00,28,rot,1.12081,5.77316e-15,5,112,1,"A solution has been found",02f3ab55-c206-44fa-9a83-529afc05a470
+N8,D5.00,28,sph,0.60763,0.126092,21,257,0,"Solution stagnation",59ce2535-10a1-4874-b4f4-9980e79861f0
+N8,D5.00,28,rot,0.845952,1.11022e-14,4,80,1,"A solution has been found",59ce2535-10a1-4874-b4f4-9980e79861f0
+N8,D5.00,28,sph,0.36495,8.14883e-06,1,328,1,"A solution has been found",a36c7486-c867-41a6-be82-1d68deddc5cc
+N8,D5.00,28,rot,1.0723,1.59872e-14,5,112,1,"A solution has been found",a36c7486-c867-41a6-be82-1d68deddc5cc
+N8,D5.00,28,sph,0.40895,8.93047e-06,1,401,1,"A solution has been found",af4934d3-f610-4128-87f3-bf215e3c243c
+N8,D5.00,28,rot,0.568311,1.06581e-14,3,59,1,"A solution has been found",af4934d3-f610-4128-87f3-bf215e3c243c
+N8,D5.00,28,sph,0.332241,4.73914e-06,1,320,1,"A solution has been found",edff06cd-2ea4-4ed5-ae32-87fc6d9f6e2f
+N8,D5.00,28,rot,1.13172,8.88178e-15,5,123,1,"A solution has been found",edff06cd-2ea4-4ed5-ae32-87fc6d9f6e2f
+N8,D5.00,28,sph,0.431502,9.11155e-06,1,401,1,"A solution has been found",f53635ab-d7ed-40e2-8611-2ccbfaf4e138
+N8,D5.00,28,rot,0.958765,1.37668e-14,5,101,1,"A solution has been found",f53635ab-d7ed-40e2-8611-2ccbfaf4e138
+N8,D5.00,28,sph,0.362579,8.1283e-06,1,351,1,"A solution has been found",00ba7322-cef8-45c8-8a6f-3943cc7fd3fe
+N8,D5.00,28,rot,0.747947,1.84297e-14,4,79,1,"A solution has been found",00ba7322-cef8-45c8-8a6f-3943cc7fd3fe
+N8,D5.00,28,sph,0.296786,8.1473e-06,1,275,1,"A solution has been found",0b84c641-cb84-4d30-9a8d-52a489820b46
+N8,D5.00,28,rot,1.04221,0.0107791,5,113,1,"A solution has been found",0b84c641-cb84-4d30-9a8d-52a489820b46
+N8,D5.00,28,sph,0.357991,5.99601e-06,1,321,1,"A solution has been found",6b639b85-57f3-4202-a9dd-577f27f21d33
+N8,D5.00,28,rot,1.19872,2.19824e-14,6,127,1,"A solution has been found",6b639b85-57f3-4202-a9dd-577f27f21d33
+N8,D5.00,28,sph,0.427497,1.52661,17,189,0,"Solution stagnation",85ecee87-e9e7-41dd-bcdb-c3af2dbcf157
+N8,D5.00,28,rot,3.80461,0.934206,20,357,0,"Solution stagnation",85ecee87-e9e7-41dd-bcdb-c3af2dbcf157
+N8,D5.00,28,sph,0.432806,1.07805e-05,1,401,1,"A solution has been found",97de51b1-0641-444b-86d6-e6c242601c4f
+N8,D5.00,28,rot,0.972241,2.28706e-14,5,106,1,"A solution has been found",97de51b1-0641-444b-86d6-e6c242601c4f
+N8,D5.00,28,sph,0.359319,0.37074,12,208,0,"Solution stagnation",9ddbb221-6a81-444a-a1ee-12ad3cc11d27
+N8,D5.00,28,rot,0.818141,3.30846e-14,4,88,1,"A solution has been found",9ddbb221-6a81-444a-a1ee-12ad3cc11d27
+N8,D5.00,28,sph,0.492856,0.0231061,14,295,0,"Solution stagnation",b728b2a7-54d4-47b1-aefe-13913550fcf5
+N8,D5.00,28,rot,1.36551,1.66533e-14,7,146,1,"A solution has been found",b728b2a7-54d4-47b1-aefe-13913550fcf5
+N8,D5.00,28,sph,0.375191,8.17084e-06,1,349,1,"A solution has been found",039ba856-3009-4b32-b7f1-997a7c2d4788
+N8,D5.00,28,rot,1.09581,1.57652e-14,5,121,1,"A solution has been found",039ba856-3009-4b32-b7f1-997a7c2d4788
+N8,D5.00,28,sph,0.355941,8.11857e-06,1,326,1,"A solution has been found",0bc4b94a-3ee1-4041-9997-b17ee540b922
+N8,D5.00,28,rot,1.05004,1.70974e-14,5,112,1,"A solution has been found",0bc4b94a-3ee1-4041-9997-b17ee540b922
+N8,D5.00,28,sph,0.251348,8.14051e-06,1,232,1,"A solution has been found",16a2b990-ab34-4b22-a5be-3ddc71f035ad
+N8,D5.00,28,rot,3.66693,0.867455,21,335,0,"Solution stagnation",16a2b990-ab34-4b22-a5be-3ddc71f035ad
+N8,D5.00,28,sph,0.470408,0.471443,17,233,0,"Solution stagnation",292f6801-023e-4cec-adf2-b5a827bbc285
+N8,D5.00,28,rot,0.884956,1.39888e-14,4,96,1,"A solution has been found",292f6801-023e-4cec-adf2-b5a827bbc285
+N8,D5.00,28,sph,0.480084,0.39101,16,248,0,"Solution stagnation",2d81fe91-f589-43a5-96e3-c215e20b92b3
+N8,D5.00,28,rot,4.10293,0.229042,24,349,0,"Solution stagnation",2d81fe91-f589-43a5-96e3-c215e20b92b3
+N8,D5.00,28,sph,0.431356,1.89449e-05,1,401,1,"A solution has been found",37688d94-db6d-4f78-91c5-f74372970cf8
+N8,D5.00,28,rot,1.66038,0.0321415,8,175,1,"A solution has been found",37688d94-db6d-4f78-91c5-f74372970cf8
+N8,D5.00,28,sph,0.424112,4.74018e-06,1,401,1,"A solution has been found",536e372b-af35-4cb2-b0f4-d037304a0ccc
+N8,D5.00,28,rot,1.0309,9.54792e-15,5,110,1,"A solution has been found",536e372b-af35-4cb2-b0f4-d037304a0ccc
+N8,D5.00,28,sph,0.257904,8.13809e-06,1,243,1,"A solution has been found",5a2f8b09-0463-4c30-8700-f35c5a68dd77
+N8,D5.00,28,rot,1.04107,3.44169e-14,5,108,1,"A solution has been found",5a2f8b09-0463-4c30-8700-f35c5a68dd77
+N8,D5.00,28,sph,0.22756,5.96098e-06,1,197,1,"A solution has been found",5fca0133-a298-47d1-a00f-16e387d04d88
+N8,D5.00,28,rot,1.05105,8.43769e-15,5,109,1,"A solution has been found",5fca0133-a298-47d1-a00f-16e387d04d88
+N8,D5.00,28,sph,0.236259,8.14254e-06,1,217,1,"A solution has been found",7c17502c-e7c9-45f6-a862-38cadd4b6368
+N8,D5.00,28,rot,0.958659,1.42109e-14,5,105,1,"A solution has been found",7c17502c-e7c9-45f6-a862-38cadd4b6368
+N8,D5.00,28,sph,0.43054,7.84039e-06,1,401,1,"A solution has been found",8030abe5-d3b8-4f48-b9f7-1acebe7eef8c
+N8,D5.00,28,rot,0.832967,2.33147e-14,4,87,1,"A solution has been found",8030abe5-d3b8-4f48-b9f7-1acebe7eef8c
+N8,D5.00,28,sph,0.269866,8.1275e-06,1,245,1,"A solution has been found",ba90fa44-2d76-4124-9194-265226a39f0f
+N8,D5.00,28,rot,1.03199,2.59792e-14,5,115,1,"A solution has been found",ba90fa44-2d76-4124-9194-265226a39f0f
+N8,D5.00,28,sph,0.377247,8.12053e-06,1,354,1,"A solution has been found",1528ab6e-aff5-46ce-8c74-c528171f17d2
+N8,D5.00,28,rot,0.765851,6.66134e-15,3,79,1,"A solution has been found",1528ab6e-aff5-46ce-8c74-c528171f17d2
+N8,D5.00,28,sph,0.465004,7.98036e-06,1,401,1,"A solution has been found",409f7980-840d-4f19-8903-1f68f28ff627
+N8,D5.00,28,rot,1.26009,1.9984e-14,5,104,1,"A solution has been found",409f7980-840d-4f19-8903-1f68f28ff627
+N8,D5.00,28,sph,0.555225,3.97322e-06,1,401,1,"A solution has been found",438e443c-2ce7-432f-9820-0db210be153a
+N8,D5.00,28,rot,0.926317,3.15303e-14,4,93,1,"A solution has been found",438e443c-2ce7-432f-9820-0db210be153a
+N8,D5.00,28,sph,0.378746,8.15672e-06,1,355,1,"A solution has been found",7521d733-cbc8-426f-a380-6dd3c7923d5a
+N8,D5.00,28,rot,0.82064,0.0146321,4,86,1,"A solution has been found",7521d733-cbc8-426f-a380-6dd3c7923d5a
+N8,D5.00,28,sph,0.230961,8.12376e-06,1,199,1,"A solution has been found",0683fcb7-1ca7-462a-b83c-3850736256bf
+N8,D5.00,28,rot,1.07602,2.79776e-14,5,115,1,"A solution has been found",0683fcb7-1ca7-462a-b83c-3850736256bf
+N8,D5.00,28,sph,0.387213,8.13356e-06,1,351,1,"A solution has been found",21c7164b-04d2-42ab-bb8c-d927488661b4
+N8,D5.00,28,rot,1.09294,8.88178e-15,5,114,1,"A solution has been found",21c7164b-04d2-42ab-bb8c-d927488661b4
+N8,D5.00,28,sph,0.446069,0.191078,14,266,0,"Solution stagnation",3100dd6a-6e1c-40db-ab85-05b92747669b
+N8,D5.00,28,rot,2.45942,0.0586592,11,253,1,"A solution has been found",3100dd6a-6e1c-40db-ab85-05b92747669b
+N8,D5.00,28,sph,0.512198,0.0704289,18,258,0,"Solution stagnation",8646a67e-7281-4df1-93ba-ca683830a2db
+N8,D5.00,28,rot,1.02254,3.17524e-14,5,110,1,"A solution has been found",8646a67e-7281-4df1-93ba-ca683830a2db
+N8,D5.00,28,sph,0.469044,0.0730564,17,245,0,"Solution stagnation",9683a689-564f-4adb-91af-68c24f317a3b
+N8,D5.00,28,rot,0.551355,1.28786e-14,3,56,1,"A solution has been found",9683a689-564f-4adb-91af-68c24f317a3b
+N8,D5.00,28,sph,0.462977,2.73344e-06,1,401,1,"A solution has been found",b3f153a8-99f5-4e20-ab87-7647f0712936
+N8,D5.00,28,rot,1.51819,9.99201e-15,8,161,1,"A solution has been found",b3f153a8-99f5-4e20-ab87-7647f0712936
+N8,D5.00,28,sph,0.444722,6.52881e-06,1,401,1,"A solution has been found",f8b7f3e4-37f6-4bea-939c-096c05404f9f
+N8,D5.00,28,rot,3.8779,0.437215,22,325,0,"Solution stagnation",f8b7f3e4-37f6-4bea-939c-096c05404f9f
+N8,D5.00,28,sph,0.432636,3.20477e-06,1,401,1,"A solution has been found",6117999a-02ef-4437-99e8-6c8d8c8215c1
+N8,D5.00,28,rot,1.78242,1.08802e-14,7,171,1,"A solution has been found",6117999a-02ef-4437-99e8-6c8d8c8215c1
+N8,D5.00,28,sph,0.420425,1.16362e-05,1,401,1,"A solution has been found",9b14b73e-93cd-471e-800b-6c8611998dda
+N8,D5.00,28,rot,1.01574,1.26565e-14,5,103,1,"A solution has been found",9b14b73e-93cd-471e-800b-6c8611998dda
+N8,D5.00,28,sph,0.305119,5.03707e-07,1,279,1,"A solution has been found",ace93a0d-415d-491c-a874-6d066d56bc75
+N8,D5.00,28,rot,2.17393,0.00149255,9,218,1,"A solution has been found",ace93a0d-415d-491c-a874-6d066d56bc75
+N8,D5.00,28,sph,0.523679,5.42068e-07,1,401,1,"A solution has been found",c3cb0726-29cd-426e-8741-c925edd81521
+N8,D5.00,28,rot,4.79053,0.129413,21,433,0,"Function stagnation",c3cb0726-29cd-426e-8741-c925edd81521
+N8,D5.00,28,sph,0.311689,2.95397e-06,1,277,1,"A solution has been found",f82ebb8f-a9e5-47b8-89d0-a338751f0f87
+N8,D5.00,28,rot,1.95125,0.0117556,10,196,1,"A solution has been found",f82ebb8f-a9e5-47b8-89d0-a338751f0f87
+N8,D5.00,28,sph,0.385255,2.43273e-06,1,359,1,"A solution has been found",b2622506-8ee9-4982-8f29-fce67225b64a
+N8,D5.00,28,rot,3.94031,0.199513,24,317,0,"Solution stagnation",b2622506-8ee9-4982-8f29-fce67225b64a
+N8,D5.00,28,sph,0.478409,0.619939,18,223,0,"Solution stagnation",e3630580-207f-484b-8884-e94c6a24b87f
+N8,D5.00,28,rot,1.32327,2.15383e-14,6,135,1,"A solution has been found",e3630580-207f-484b-8884-e94c6a24b87f

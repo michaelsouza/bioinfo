@@ -1,0 +1,3 @@
+method,fobj,nit_global,nit_local,total_time,msg
+sph,0.559743,13,420,0.527639,"Function stagnation"
+rot,7.10543e-15,3,44,0.410223,"A solution has been found"

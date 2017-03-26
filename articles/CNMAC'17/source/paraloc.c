@@ -5,6 +5,7 @@
 #include <time.h>
 #include <omp.h>
 #include <math.h>
+#include<gsl/gsl_multimin.h>
 
 typedef struct {
 	int nnodes;
@@ -267,7 +268,7 @@ double graph_eij(Graph *G, int i, int j) {
 
 void graph_update_error_edge(Graph *G, int i, int j, double eij) {
 	int k;
-	
+
 	//printf("Update[G(%d,%d)]: eij = %g\n", i, j, eij);
 
 	// loc edge ij
@@ -290,30 +291,32 @@ void graph_update_error_edge(Graph *G, int i, int j, double eij) {
 	//print_double("e", G->e, 2 * G->nedges);
 }
 
-void graph_update_error_neighs(Graph *G, int k, double *x, int *isloc) {
+double graph_update_error_neighs(Graph *G, int k, double *x, int *islocated) {
 	int i, j, n, *neighs;
-	double eij, dij;
+	double eij, eij_total = 0, dij;
 	graph_get_neighs(G, k, &neighs, &n);
 	//printf("N[%d] = ", k); print_int("", neighs, n);
 	for (i = 0; i < n; i++)
 	{
 		j = neighs[i];
-		if (isloc[j]) {
+		if (islocated[j]) {
 			dij = graph_dij(G, k, j);
 			eij = fabs(vec_dist(&x[3 * k], &x[3 * j]) - dij) / dij;
+			eij_total += eij;
 			graph_update_error_edge(G, k, j, eij);
 		}
 	}
+	return eij_total;
 }
 
-double graph_error_node(Graph *G, int k, int *isloc) {
+double graph_error_node(Graph *G, int k, int *islocated) {
 	double sum_eij = 0, eij;
 	int *neighs, n, i, j;
-	if (isloc[k]) {
+	if (islocated[k]) {
 		graph_get_neighs(G, k, &neighs, &n);
 		for (i = 0; i < n; i++) {
 			j = neighs[i];
-			if (isloc[j]) {
+			if (islocated[j]) {
 				graph_edge(G, k, j, NULL, &eij);
 				sum_eij += eij;
 			}
@@ -325,20 +328,20 @@ double graph_error_node(Graph *G, int k, int *isloc) {
 	}
 }
 
-void graph_print_error_node(Graph *G, int k, int *isloc) {
-	if (isloc[k]) {
-		printf("e[%d] = %g\n", k, graph_error_node(G, k, isloc));
+void graph_print_error_node(Graph *G, int k, int *islocated) {
+	if (islocated[k]) {
+		printf("e[%d] = %g\n", k, graph_error_node(G, k, islocated));
 	}
 	else {
-		printf("e[%d] = 0 (isloc[%d] == 0)\n", k, k);
+		printf("e[%d] = 0 (islocated[%d] == 0)\n", k, k);
 	}
 }
 
-void graph_print_error_stats(Graph *G, int *isloc) {
+void graph_print_error_stats(Graph *G, int *islocated) {
 	double max_e = 0, mean_e = 0, eij;
 	int i;
 	for (i = 0; i < G->nnodes; i++) {
-		eij = graph_error_node(G, i, isloc);
+		eij = graph_error_node(G, i, islocated);
 		if (eij > max_e) max_e = eij;
 		mean_e += eij;
 		if (G->nnodes < 30) printf("e[%d] = %g\n", i, eij);
@@ -524,7 +527,7 @@ int base_isclique(Graph *G, int *B, int n) {
 	return 1;
 }
 
-int base_anchor(Graph *G, int k, int *isloc, int *b) {
+int base_anchor(Graph *G, int k, int *islocated, int *b) {
 	int *neighs, i, j, n, bn = 0;
 	KeyValue *kv = (KeyValue*)malloc(sizeof(KeyValue) * G->max_degree);
 
@@ -534,11 +537,11 @@ int base_anchor(Graph *G, int k, int *isloc, int *b) {
 	// set kv
 	for (i = 0; i < n; i++) {
 		j = neighs[i];
-		if (isloc[j]) {
+		if (islocated[j]) {
 			kv[bn].key = j;
-			kv[bn].value = graph_error_node(G, j, isloc);
+			kv[bn].value = graph_error_node(G, j, islocated);
 			// discount the error of edge (k,j)
-			/*if (isloc[k]) {
+			/*if (islocated[k]) {
 				double eij = graph_eij(G, k, j);
 				kv[bn].value -= eij;
 			}*/
@@ -548,7 +551,7 @@ int base_anchor(Graph *G, int k, int *isloc, int *b) {
 
 	if (bn > 3) {
 		// select the neighs with smallest error
-		qsort(kv, bn, sizeof(KeyValue), keyvalue_compare);
+		if(0) qsort(kv, bn, sizeof(KeyValue), keyvalue_compare);
 		for (i = 0; i < 4; i++) {
 			b[i] = kv[i].key;
 		}
@@ -609,32 +612,190 @@ void base_init(Graph *G, int *B, double *x) {
 	// vec_print("x4", x + 3 * B[3]);
 }
 
-void base_locx(Graph *G, int *B, double *x) {
-	int i, j, k, sn, sn_new, nneighs, nfixed = 0;
-	int *s, *s_new, *swap, *neighs, b[4];
-	int *scores, *isloc;
-	int n = 4;
+typedef struct {
+	Graph *G;
+	int *idx_glb;
+	int *idx_loc;
+	int *islocated;
+	int n;
+} gsl_params;
+
+double gsl_f(const gsl_vector *v, void *params) {
+	// read params
+	Graph *G = ((gsl_params*)params)->G;
+	int *idx_glb = ((gsl_params*)params)->idx_glb;
+	int *idx_loc = ((gsl_params*)params)->idx_loc;
+	int *islocated = ((gsl_params*)params)->islocated;
+	int n = ((gsl_params*)params)->n;
+
+	double *x = v->data, dij, xij, f, fij;
+	int k, iloc, iglb, jloc, jglb, kmin, kmax;
+	for (iloc = 0; iloc < n; iloc++) {
+		iglb = idx_glb[iloc];
+		kmin = G->p[iglb];
+		kmax = G->p[iglb + 1];
+		for (k = kmin; k < kmax; k++) {
+			jglb = G->i[k];
+			if (islocated[jglb]) {
+				dij = G->d[k];
+				jloc = idx_loc[jglb];
+				xij = vec_dist(&x[3 * iloc], &x[3 * jloc]);
+				fij = (dij*dij - xij*xij);
+				f += fij*fij;
+			}
+		}
+	}
+	return f;
+}
+
+void gsl_df(const gsl_vector *v, void *params, gsl_vector *df)
+{
+	// read params
+	Graph *G = ((gsl_params*)params)->G;
+	int *idx_glb = ((gsl_params*)params)->idx_glb;
+	int *idx_loc = ((gsl_params*)params)->idx_loc;
+	int *islocated = ((gsl_params*)params)->islocated;
+	int n = ((gsl_params*)params)->n;
+
+	double fij, dij, xij[3], *xi, *xj;
+	double *x = v->data, *g = df->data;
+	int k, iloc, iglb, jloc, jglb, kmin, kmax;
+
+	// init g = zeros
+	for (iloc = 0; iloc < 3 * n; iloc++)g[iloc] = 0.0;
+
+	// set g
+	for (iloc = 0; iloc < n; iloc++) {
+		xi = &x[3 * iloc];
+		iglb = idx_glb[iloc];
+		kmin = G->p[iglb];
+		kmax = G->p[iglb + 1];
+		for (k = kmin; k < kmax; k++) {
+			jglb = G->i[k];
+			if (islocated[jglb]) {
+				dij = G->d[k];
+				jloc = idx_loc[jglb];
+				xj = &x[3 * jloc];
+				vec_diff(xi, xj, xij);
+				fij = (dij * dij - xij[0] * xij[0] - xij[1] * xij[1] - xij[2] * xij[2]);
+				g[3 * iloc + 0] = -4 * fij * (xi[0] - xj[0]);
+				g[3 * iloc + 1] = -4 * fij * (xi[1] - xj[1]);
+				g[3 * iloc + 2] = -4 * fij * (xi[2] - xj[2]);
+				g[3 * jloc + 0] = -g[3 * iloc + 0];
+				g[3 * jloc + 1] = -g[3 * iloc + 1];
+				g[3 * jloc + 2] = -g[3 * iloc + 2];
+			}
+		}
+	}
+}
+
+void gsl_fdf(const gsl_vector *x, void *params, double *f, gsl_vector *df)
+{
+	*f = gsl_f(x, params);
+	gsl_df(x, params, df);
+}
+
+void gsl_refinement(Graph *G, int *islocated, int nlocated, double *x) {
+	int iglb, iloc;
+	gsl_params params;
 
 	// memory allocation
-	isloc = (int*)malloc(sizeof(int) * G->nnodes);
+	gsl_vector *v = gsl_vector_alloc(3 * nlocated);
+	int *idx_loc = (int*)malloc(sizeof(int) * G->nnodes);
+	int *idx_glb = (int*)malloc(sizeof(int) * nlocated);
+	if (idx_loc == NULL || idx_glb == NULL) {
+		printf("Memory could not be allocated\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// v[iloc] = x[iglb]
+	iloc = 0;
+	for (iglb = 0; iglb < G->nnodes; iglb++) {
+		if (islocated[iglb]) {
+			idx_loc[iglb] = iloc;
+			idx_glb[iloc] = iglb;
+			gsl_vector_set(v, 3 * iloc + 0, x[3 * iglb + 0]);
+			gsl_vector_set(v, 3 * iloc + 2, x[3 * iglb + 1]);
+			gsl_vector_set(v, 3 * iloc + 1, x[3 * iglb + 2]);
+			iloc++;
+		}
+	}
+
+	// set gsl_params
+	params.G = G;
+	params.n = nlocated;
+	params.islocated = islocated;
+	params.idx_loc = idx_loc;
+	params.idx_glb = idx_glb;
+
+	// set function
+	gsl_multimin_function_fdf gsl_fobj;
+	gsl_fobj.n = v->size;
+	gsl_fobj.f = gsl_f;
+	gsl_fobj.df = gsl_df;
+	gsl_fobj.fdf = gsl_fdf;
+	gsl_fobj.params = (void*) &params;
+
+	// set minimizer
+	const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_conjugate_fr;
+	gsl_multimin_fdfminimizer *minimizer = gsl_multimin_fdfminimizer_alloc(T, v->size);
+	gsl_multimin_fdfminimizer_set(minimizer, &gsl_fobj, v, 0.01, 1E-4);
+
+	int iter = 0, status;
+	printf("     [%2d] fx = %g\n", iter, gsl_f(v, &params));
+	do {
+		iter++;
+		status = gsl_multimin_fdfminimizer_iterate(minimizer);
+		if (status) break;
+		status = gsl_multimin_test_gradient(minimizer->gradient, 1E-3);
+		double fx = gsl_multimin_fdfminimizer_minimum(minimizer);
+		printf("     [%2d] fx = %g\n", iter, fx);
+	} while (status == GSL_CONTINUE && iter < 100);
+
+	// x[iglb] = v[iloc]
+	for (iloc = 0; iloc < nlocated; iloc++) {
+		iglb = idx_glb[iloc];
+		x[3 * iglb + 0] = gsl_vector_get(v, 3 * iloc + 0);
+		x[3 * iglb + 1] = gsl_vector_get(v, 3 * iloc + 1);
+		x[3 * iglb + 2] = gsl_vector_get(v, 3 * iloc + 2);
+
+		graph_update_error_neighs(G, iglb, x, islocated);
+	}
+
+	// free memory
+	free(idx_glb);
+	free(idx_loc);
+	gsl_vector_free(v);
+	gsl_multimin_fdfminimizer_free(minimizer);
+}
+
+void base_locx(Graph *G, int *B, double *x) {
+	int i, j, k, sn, sn_new, nneighs, nlocated;
+	int *s, *s_new, *swap, *neighs, b[4];
+	int *scores, *islocated;
+	int n = 4;
+	double eij;
+
+	// memory allocation
+	islocated = (int*)malloc(sizeof(int) * G->nnodes);
 	s = (int*)malloc(sizeof(int) * G->nnodes);
 	s_new = (int*)malloc(sizeof(int) * G->nnodes);
 	scores = (int*)malloc(sizeof(int) * G->nnodes);
 
 	// check allocation
-	if (s == NULL || s_new == NULL || isloc == NULL || scores == NULL) {
+	if (s == NULL || s_new == NULL || islocated == NULL || scores == NULL) {
 		printf("Memory could not be allocated.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	// set isloc = scores = zeros
+	// set islocated = scores = zeros
 	for (i = 0; i < G->nnodes; i++) {
-		isloc[i] = 0;
+		islocated[i] = 0;
 		scores[i] = 0;
 	}
 
-	// init isloc
-	for (i = 0; i < n; i++) isloc[B[i]] = 1;
+	// init islocated
+	for (i = 0; i < n; i++) islocated[B[i]] = 1;
 
 	// init scores
 	for (i = 0; i < n; i++) scores[B[i]] = n;
@@ -644,10 +805,10 @@ void base_locx(Graph *G, int *B, double *x) {
 	for (i = 0; i < n; i++) s[i] = B[i];
 
 	// init erros
-	for (i = 0; i < n; i++) graph_update_error_neighs(G, B[i], x, isloc);
+	for (i = 0; i < n; i++) graph_update_error_neighs(G, B[i], x, islocated);
 
+	nlocated = 4;
 	do {
-		nfixed += sn;
 		//if (VERBOSE) print_int("s", s, sn);
 		sn_new = 0;
 		// set location and update the list of nodes to be fixed
@@ -659,18 +820,23 @@ void base_locx(Graph *G, int *B, double *x) {
 				// update neighs scores
 				scores[k]++;
 				//if (VERBOSE)  printf("score[%d] = %d\n", k, scores[k]);
-				//if (VERBOSE) printf("isloc[%d] = %d\n", k, isloc[k]);
+				//if (VERBOSE) printf("islocated[%d] = %d\n", k, islocated[k]);
 				// check if k coords can be calculated
-				if (scores[k] >= n && isloc[k] == 0) {
-					// k can be fixed
-					s_new[sn_new++] = k;
+				if (scores[k] >= n && islocated[k] == 0) {
 					// set x[k] location
-					isloc[k] = base_anchor(G, k, isloc, b);
+					islocated[k] = base_anchor(G, k, islocated, b);
 					//printf("Loc %d with ", k); print_int("b", b, 4);
 					//if (VERBOSE) print_int("s_new", s_new, sn_new);
-					if (isloc[k]) {
+					if (islocated[k]) {
+						nlocated++;
+						// insert in the list to be located
+						s_new[sn_new++] = k;
 						base_update_x(G, b, k, x);
-						graph_update_error_neighs(G, k, x, isloc);
+						eij = graph_update_error_neighs(G, k, x, islocated);
+						if (eij > 1E-11) {
+							printf("   [%5d] Refining eij = %3.2e\n", nlocated, eij);
+							gsl_refinement(G, islocated, nlocated, x);
+						}
 					}
 					else {
 						printf("The node %d could not be loc.\n", k);
@@ -688,11 +854,11 @@ void base_locx(Graph *G, int *B, double *x) {
 	} while (sn > 0);
 
 	// print outputs
-	printf("   Number of fixed points: %d/%d\n", nfixed, G->nnodes);
-	if (nfixed < G->nnodes && nfixed < 30) {
+	printf("   Number of fixed points: %d/%d\n", nlocated, G->nnodes);
+	if (nlocated < G->nnodes && nlocated < 30) {
 		printf("     NotFixed: ");
 		for (i = 0; i < G->nnodes; i++) {
-			if (isloc[i] == 0) {
+			if (islocated[i] == 0) {
 				printf("%d ", i);
 				x[3 * i + 0] = NAN;
 				x[3 * i + 1] = NAN;
@@ -701,12 +867,12 @@ void base_locx(Graph *G, int *B, double *x) {
 		}
 	}
 	printf("\n");
-	graph_print_error_stats(G, isloc);
+	graph_print_error_stats(G, islocated);
 
 	free(s);
 	free(s_new);
 	free(scores);
-	free(isloc);
+	free(islocated);
 }
 
 void nodes_save(char *filename, double *x, int n) {
@@ -719,6 +885,10 @@ void nodes_save(char *filename, double *x, int n) {
 	}
 	fclose(fid);
 }
+
+RETORNAR O CODIGO DE SELECAO DA ANCORA
+CHECAR OS CODIGOS DA FUNCAO E DO GRADIENTE
+PODE SER NECESSARIO AJUSTAR OS PARAMETROD GSL
 
 int main(int argc, char **argv) {
 	int num_procs, num_threads;

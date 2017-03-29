@@ -1,9 +1,5 @@
-paraloc.exe: paraloc.c
-	gcc -Wall -Werror paraloc.c -lgsl -lgslcblas -fopenmp -lm -o paraloc
+buildupopt: buildupopt.c
+	gcc -Wall -Werror buildupopt.c -lgsl -lgslcblas -fopenmp -lm -o buildupopt
 
-hello_gsl: hello_gsl.cpp
-	gcc hello_gsl.cpp -lgsl -lgslcblas -lm -o hello_gsl
-	./hello_gsl
-
-run:paraloc.exe
-	./paraloc.exe GRAPH_5CYT.csv
+run:buildupopt
+	./buildupopt 1 1 ../instances/GRAPH_1PLW_N00075.csv
